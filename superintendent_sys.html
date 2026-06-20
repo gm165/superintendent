@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Superintendent System v7.4 | Sahiwal Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#0f3b5f;--primary-light:#1e5a7a;--primary-bg:#eef2ff;
+  --success:#15803d;--success-bg:#dcfce7;
+  --danger:#b91c1c;--danger-bg:#fee2e2;
+  --border:#cbd5e1;--text:#0f172a;--text-muted:#475569;
+  --bg:#f1f5f9;--card:#fff;--radius:14px
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text)}
+.navbar{background:var(--primary);display:flex;align-items:center;justify-content:space-between;padding:0 1.2rem;flex-wrap:wrap;position:sticky;top:0;z-index:200}
+.brand{color:white;font-weight:700;font-size:0.95rem;padding:0.65rem 0;line-height:1.3}
+.brand span{font-size:0.68rem;opacity:0.8;display:block}
+.nav-tabs{display:flex;gap:0.1rem;flex-wrap:wrap}
+.nav-btn{background:transparent;border:none;color:rgba(255,255,255,0.82);font-weight:500;padding:0.65rem 0.75rem;font-size:0.76rem;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.nav-btn.active{color:white;border-bottom-color:#fbbf24}
+.top-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.hamburger{display:none;background:none;border:none;color:white;font-size:1.4rem;cursor:pointer;padding:0.5rem}
+.mobile-menu{display:none;flex-direction:column;background:var(--primary)}
+.mobile-menu.open{display:flex}
+.mob-item{background:none;border:none;color:rgba(255,255,255,0.85);padding:0.75rem 1rem;text-align:left;font-size:0.9rem;border-bottom:1px solid rgba(255,255,255,0.1);cursor:pointer;width:100%}
+.mob-item.active{color:#fbbf24;background:rgba(255,255,255,0.05)}
+.container{max-width:1400px;margin:0 auto;padding:1.2rem}
+.section{display:none}
+.section.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1.5rem;overflow:hidden}
+.card-header{background:#f9fafb;padding:0.85rem 1.2rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.card-header h3{font-size:0.95rem;font-weight:700;color:var(--primary)}
+.card-body{padding:1.2rem}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin-bottom:1.5rem}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:1rem;padding:1rem;text-align:center}
+.stat-number{font-size:1.9rem;font-weight:800}
+.stat-label{font-size:0.67rem;text-transform:uppercase;color:var(--text-muted);margin-top:4px}
+.form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.form-group label{font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase}
+input,select,textarea{padding:8px 12px;border:1.5px solid var(--border);border-radius:12px;font-size:0.85rem;background:var(--card);color:var(--text);font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)}
+.row-2,.row-3,.row-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px}
+.btn{padding:7px 15px;border-radius:40px;font-weight:600;font-size:0.75rem;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.btn-sm{padding:5px 11px;font-size:0.7rem}
+.btn-primary{background:var(--primary);color:white}
+.btn-success{background:var(--success);color:white}
+.btn-danger{background:var(--danger);color:white}
+.btn-warning{background:#b45309;color:white}
+.btn-outline{background:white;border:1.5px solid var(--primary);color:var(--primary)}
+.btn-block{width:100%;justify-content:center;margin-top:10px;padding:10px}
+.table-wrapper{overflow-x:auto}
+.data-table{width:100%;border-collapse:collapse;font-size:0.75rem}
+.data-table th{background:var(--primary-bg);padding:9px 8px;text-align:left;font-weight:700;color:var(--primary);white-space:nowrap}
+.data-table td{padding:8px;border-bottom:1px solid #e2e8f0}
+.badge{padding:2px 8px;border-radius:40px;font-size:0.65rem;font-weight:600}
+.badge-morning{background:#dbeafe;color:#1e40af}
+.badge-evening{background:#ffedd5;color:#92400e}
+.seat-grid-table{width:100%;border-collapse:collapse;margin-bottom:1rem;font-size:0.75rem}
+.seat-grid-table th{background:#e2e8f0;border:1px solid #64748b;padding:8px 4px;text-align:center}
+.seat-cell{border:1px solid #aaa;padding:3px 2px;text-align:center;background:#fff}
+.seat-cell input{width:100%;border:none;text-align:center;font-family:monospace;font-size:0.75rem;padding:5px 0;background:transparent}
+.seat-cell.filled{background:#dcfce7}
+.subject-tag{display:inline-flex;align-items:center;gap:5px;background:var(--primary-bg);padding:4px 12px;border-radius:40px;margin:3px;font-size:0.8rem}
+.subject-tag button{background:none;border:none;cursor:pointer;color:var(--danger);font-weight:bold;padding:0 2px}
+
+/* ── Roll Master styles ── */
+.roll-subject-card{border:1.5px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden}
+.roll-subject-header{background:var(--primary-bg);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;cursor:pointer}
+.roll-subject-header h4{font-size:0.88rem;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:8px}
+.roll-count-badge{background:var(--primary);color:white;padding:2px 10px;border-radius:40px;font-size:0.7rem;font-weight:600}
+.roll-pills-wrap{padding:10px 14px;display:flex;flex-wrap:wrap;gap:5px;max-height:200px;overflow-y:auto}
+.roll-pill{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:3px 9px;font-family:monospace;font-size:0.75rem;cursor:pointer;transition:background 0.15s}
+.roll-pill:hover{background:var(--danger-bg);border-color:var(--danger);color:var(--danger)}
+.roll-pill.selected-for-seating{background:#dcfce7;border-color:#15803d;color:#14532d;font-weight:700}
+
+/* Auto-assign panel */
+.auto-assign-panel{background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:12px 14px;margin-top:10px;font-size:0.8rem}
+
+/* Combined Hall View */
+.combined-hall-table{width:100%;border-collapse:collapse;font-size:0.71rem;table-layout:fixed}
+.combined-hall-table th{border:1.5px solid #334155;padding:5px 3px;text-align:center;background:#1e3a5f;color:white;font-size:0.67rem}
+.combined-hall-table th.subj-header{font-size:0.64rem;padding:3px 2px}
+.chcell{border:1px solid #94a3b8;padding:4px 3px;text-align:center;font-family:monospace;font-size:0.7rem;min-width:54px}
+.chcell.s0{background:#dbeafe;color:#1e3a8a;font-weight:700}
+.chcell.s1{background:#dcfce7;color:#14532d;font-weight:700}
+.chcell.s2{background:#fef9c3;color:#713f12;font-weight:700}
+.chcell.s3{background:#fce7f3;color:#831843;font-weight:700}
+.chcell.s4{background:#ede9fe;color:#4c1d95;font-weight:700}
+.chcell.s5{background:#ffedd5;color:#7c2d12;font-weight:700}
+.chcell.empty{background:#f8fafc;color:#cbd5e1}
+.row-num-cell{background:#f1f5f9;color:#64748b;font-size:0.63rem;font-weight:600;border:1px solid #cbd5e1;text-align:center;padding:3px;width:26px}
+.swatch{width:13px;height:13px;border-radius:3px;display:inline-block;vertical-align:middle;margin-right:3px}
+.td-date-vertical{writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);white-space:nowrap;font-weight:700;text-align:center;padding:8px 4px;background:#eef2ff;font-size:0.7rem;vertical-align:middle}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--primary);color:white;padding:8px 22px;border-radius:40px;z-index:9999;opacity:0;transition:opacity 0.2s;pointer-events:none;font-size:0.85rem}
+.toast.show{opacity:1}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:1000;padding:1rem}
+.modal.open{display:flex}
+.modal-card{background:var(--card);max-width:720px;width:100%;border-radius:20px;padding:1.4rem;max-height:92vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.modal-header h3{font-size:1rem;font-weight:700;color:var(--primary)}
+.alert{padding:10px 14px;border-radius:12px;font-size:0.8rem;margin-bottom:12px}
+.alert-info{background:var(--primary-bg);color:var(--primary)}
+.alert-success{background:var(--success-bg);color:var(--success)}
+.alert-danger{background:var(--danger-bg);color:var(--danger)}
+.shift-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.65rem;font-weight:700;margin-left:4px}
+.shift-badge.morning{background:#dbeafe;color:#1e40af}
+.shift-badge.evening{background:#ffedd5;color:#92400e}
+/* ── TA-DA Bill — Exact Excel Format ── */
+.tada-wrap{background:white;border:2px solid #000;font-family:'Times New Roman',serif;font-size:8pt;color:#000;width:100%;max-width:1050px;margin:0 auto}
+.tada-wrap table{border-collapse:collapse;width:100%}
+.tada-wrap td,.tada-wrap th{border:1px solid #555;padding:3px 5px;vertical-align:top;font-size:7.5pt}
+.tada-wrap td.nb{border:none}
+.tada-wrap td.bb{border-bottom:1px solid #999}
+.tada-wrap td.bl{border-left:1px solid #999}
+.tada-wrap td.bt{border-top:1px solid #999}
+.tada-wrap td.br{border-right:1px solid #999}
+.tada-bold{font-weight:700}
+.tada-center{text-align:center}
+.tada-urdu{font-family:'Jameel Noori Nastaliq','Segoe UI',sans-serif}
+.print-target{display:block!important}
+
+/* SF-13 print area: repeat header on every page */
+@media print {
+  .no-print{display:none!important}
+  .print-target{display:block!important}
+  .section{display:none!important}
+  .print-target{display:block!important}
+  
+  /* SF-13 specific: the whole report card is the print area */
+  #sf13Section .card-body > div {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  #sf13Section .card-body {
+    padding: 0 !important;
+  }
+  #sf13Section .card {
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+  #sf13Section .card-header {
+    display: none !important;
+  }
+  /* repeat heading on each page */
+  .sf13-heading {
+    display: block !important;
+    page-break-after: avoid;
+  }
+  .sf13-heading h3, .sf13-heading h4, .sf13-heading p {
+    margin: 2px 0;
+  }
+  .sf13-heading {
+    border-bottom: 2px solid #000;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="brand">
+    📊 Superintendent System<br><span>v7.4 | BISE Sahiwal</span>
+  </div>
+  <button class="hamburger" onclick="toggleMobileMenu()">☰</button>
+  <div class="nav-tabs">
+    <button class="nav-btn active" data-section="dashboard">Dashboard</button>
+    <button class="nav-btn" data-section="rollmaster">Roll Master</button>
+    <button class="nav-btn" data-section="seatplan">Seating Plan</button>
+    <button class="nav-btn" data-section="attendance">Attendance</button>
+    <button class="nav-btn" data-section="sf13">SF-13 Report</button>
+    <button class="nav-btn" data-section="tada">TA-DA Bill</button>
+  </div>
+  <div class="top-actions">
+    <button class="btn btn-outline btn-sm" onclick="openSetupModal()">⚙️ Setup</button>
+    <button class="btn btn-outline btn-sm" onclick="exportBackup()">💾 Backup</button>
+    <label class="btn btn-outline btn-sm" style="margin:0"><input type="file" accept=".json" onchange="importBackup(this)" style="display:none">📥 Restore</label>
+  </div>
+</div>
+
+<div id="mobileMenu" class="mobile-menu">
+  <button class="mob-item active" data-mobile="dashboard">Dashboard</button>
+  <button class="mob-item" data-mobile="rollmaster">Roll Master</button>
+  <button class="mob-item" data-mobile="seatplan">Seating Plan</button>
+  <button class="mob-item" data-mobile="attendance">Attendance</button>
+  <button class="mob-item" data-mobile="sf13">SF-13 Report</button>
+  <button class="mob-item" data-mobile="tada">TA-DA Bill</button>
+</div>
+
+<div id="toastMsg" class="toast"></div>
+
+<div class="container">
+
+<!-- ════════════════════════════════════════════════ DASHBOARD ════════════════════════════════════════════════ -->
+<div id="dashboardSection" class="section active">
+  <div class="card">
+    <div class="card-header"><h3>📈 Dashboard</h3></div>
+    <div class="card-body">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-number" id="statRollSubjects">0</div><div class="stat-label">Subjects</div></div>
+        <div class="stat-card"><div class="stat-number" id="statTotalRolls">0</div><div class="stat-label">Total Rolls</div></div>
+        <div class="stat-card"><div class="stat-number" id="statSessions">0</div><div class="stat-label">Sessions</div></div>
+        <div class="stat-card"><div class="stat-number" id="statPresent">0</div><div class="stat-label">Present</div></div>
+        <div class="stat-card"><div class="stat-number" id="statAbsent">0</div><div class="stat-label">Absent</div></div>
+        <div class="stat-card"><div class="stat-number" id="statCopies">0</div><div class="stat-label">Copies</div></div>
+      </div>
+      <div id="centerInfoPreview"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>📋 Recent Attendance</h3></div>
+    <div class="card-body" id="recentAttList"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════ ROLL MASTER ════════════════════════════════════════════════ -->
+<div id="rollmasterSection" class="section">
+  <div class="card">
+    <div class="card-header">
+      <h3>📘 Roll Master (with Shift)</h3>
+      <button class="btn btn-success btn-sm" onclick="openAddSubjectRolls()">➕ Add Subject</button>
+    </div>
+    <div class="card-body">
+      <div style="margin-bottom:16px;font-size:0.8rem;color:var(--text-muted)">Manage roll numbers for each subject with Morning/Evening shift designation.</div>
+      <div id="addSubjectPanel" style="display:none;border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px">
+        <h4 id="addSubjectPanelTitle">➕ Add Subject Roll Numbers</h4>
+        <div style="margin-top:12px">
+          <div class="row-3">
+            <div class="form-group">
+              <label>Subject Name</label>
+              <select id="rollSubjectSelect" onchange="rollSubjectSelectChange()">
+                <option value="">-- Select or type subject --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Shift</label>
+              <select id="rollShift">
+                <option value="M">Morning</option>
+                <option value="E">Evening</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Subject Name (manual)</label>
+              <input id="rollSubjectName" type="text" placeholder="English, Urdu, Math, etc.">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Roll Numbers (comma or newline separated)</label>
+            <textarea id="rollNumbersInput" rows="4" placeholder="12345, 12346, 12347&#10;or&#10;12345&#10;12346&#10;12347" oninput="updateRollInputPreview()"></textarea>
+            <div id="rollInputPreview" style="font-size:0.75rem;color:var(--success);margin-top:4px"></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-success" onclick="saveSubjectRolls()">💾 Save Subject Rolls</button>
+            <button class="btn btn-outline" onclick="closeAddSubjectPanel()">Cancel</button>
+          </div>
+        </div>
+      </div>
+      <div id="rollSubjectCards"></div>
+      <div style="margin-top:14px">
+        <label class="btn btn-outline btn-sm"><input type="file" accept=".xlsx,.xls,.csv" onchange="handleRollExcelImport(this)" style="display:none">📤 Import from Excel</label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════ SEATING PLAN ════════════════════════════════════════════════ -->
+<div id="seatplanSection" class="section">
+  <div class="card">
+    <div class="card-header"><h3>🎓 Seating Plan Setup</h3></div>
+    <div class="card-body">
+      <div class="row-3">
+        <div class="form-group">
+          <label>Exam Date</label>
+          <input id="seatDate" type="date">
+        </div>
+        <div class="form-group">
+          <label>Shift</label>
+          <select id="seatShift">
+            <option value="M">Morning</option>
+            <option value="E">Evening</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Building / Section</label>
+          <input id="seatBuilding" type="text" placeholder="Main Hall, Block A, etc.">
+        </div>
+      </div>
+      <h4 style="font-size:0.9rem;color:var(--primary);margin:12px 0 8px 0">Select Subjects for Seating</h4>
+      <div id="subjectSelectorWrap" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="initiateMultiSubjectSeating()">🎯 Create Seating Grids</button>
+        <button class="btn btn-outline" onclick="clearAllSeating()">🗑 Clear All</button>
+      </div>
+    </div>
+  </div>
+  <div id="multiSeatingOutput"></div>
+  <div style="margin-bottom:16px">
+    <h4 style="font-size:0.9rem;color:var(--primary);margin:12px 0 8px 0">Hall Configuration</h4>
+    <div id="hallConfigWrap" class="card-body"></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>➕ Add / Edit Halls</h3></div>
+    <div class="card-body">
+      <div id="hallEditWrap"></div>
+      <button class="btn btn-success btn-block" onclick="addNewHall()">➕ Add New Hall</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════ ATTENDANCE ════════════════════════════════════════════════ -->
+<div id="attendanceSection" class="section">
+  <div class="card">
+    <div class="card-header"><h3>📝 Mark Attendance</h3></div>
+    <div class="card-body">
+      <div class="row-3">
+        <div class="form-group">
+          <label>Session</label>
+          <select id="attSessionSelect"></select>
+        </div>
+        <div class="form-group">
+          <label>Absent Roll Numbers</label>
+          <input id="absentRollsInput" type="text" placeholder="e.g., 12345, 12346 or 12345-12350">
+        </div>
+        <div class="form-group">
+          <label>Copies Sent To</label>
+          <input id="copiesSentToInput" type="text" placeholder="CSO, Board Office, etc." value="CSO">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Remarks / Notes</label>
+        <textarea id="remarksInput" rows="2" placeholder="Any special notes..."></textarea>
+      </div>
+      <button class="btn btn-success btn-block" onclick="saveAttendance()">💾 Save Attendance</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>📊 Attendance Records</h3></div>
+    <div class="card-body">
+      <div class="table-wrapper" id="attTableContainer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════ SF-13 REPORT ════════════════════════════════════════════════ -->
+<div id="sf13Section" class="section">
+  <div class="card">
+    <div class="card-header">
+      <h3>📋 SF-13 Attendance Report</h3>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="printSF13Only()">🖨️ Print</button>
+        <button class="btn btn-outline btn-sm" onclick="exportSF13ToExcel()">📊 Export Excel</button>
+      </div>
+    </div>
+    <div class="card-body" id="sf13ReportContainer"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════ TA-DA BILL ════════════════════════════════════════════════ -->
+<div id="tadaSection" class="section">
+  <div class="card">
+    <div class="card-header"><h3>💰 TA-DA Bill Generator</h3></div>
+    <div class="card-body">
+      <div class="row-3">
+        <div class="form-group"><label>Name</label><input id="tdName" placeholder="Mr./Miss/Mrs." oninput="saveTADAData()"></div>
+        <div class="form-group"><label>Qualification</label><input id="tdQual" placeholder="MSc, BA, etc." oninput="saveTADAData()"></div>
+        <div class="form-group"><label>Designation</label><input id="tdDesig" placeholder="Superintendent" oninput="saveTADAData()"></div>
+      </div>
+      <div class="row-3">
+        <div class="form-group"><label>BPS Grade</label><input type="number" id="tdBPS" value="15" min="1" max="22" onchange="updateDARate()"></div>
+        <div class="form-group"><label>Basic Pay (Rs.)</label><input type="number" id="tdBasicPay" placeholder="0" oninput="saveTADAData()"></div>
+        <div class="form-group"><label>CNIC No.</label><input id="tdCNIC" placeholder="xxxxx-xxxxxxx-x" oninput="saveTADAData()"></div>
+      </div>
+      <div class="row-3">
+        <div class="form-group"><label>Home Station</label><input id="tdHomeStation" placeholder="Sahiwal" oninput="saveTADAData()"></div>
+        <div class="form-group"><label>Purpose</label><input id="tdPurpose" placeholder="Examination Duty" oninput="saveTADAData()"></div>
+        <div class="form-group"><label>Role during Exam</label><select id="tdRole" onchange="saveTADAData()"><option>Superintendent</option><option>Deputy Superintendent</option><option>Additional Deputy Supt.</option><option>Invigilator</option><option>Practical Examiner</option></select></div>
+      </div>
+      <div class="row-3">
+        <div class="form-group"><label>Training Center</label><input id="tdTrainingCenter" placeholder="(optional)" oninput="saveTADAData()"></div>
+        <div class="form-group"><label>Training Date</label><input type="date" id="tdTrainingDate" onchange="saveTADAData()"></div>
+        <div class="form-group"><label>Distance to Training Center (km)</label><input type="number" id="tdDistHome2Train" min="0" placeholder="0" onchange="recalcDays()"></div>
+      </div>
+      <div class="row-3">
+        <div class="form-group"><label>Exam Center Name</label><input id="tdExamCenter" placeholder="(auto-filled)" oninput="saveTADAData()"></div>
+        <div class="form-group"><label>Exam Center Code</label><input id="tdExamCode" placeholder="(auto-filled)" oninput="saveTADAData()"></div>
+        <div class="form-group"><label>Distance to Exam Center (km)</label><input type="number" id="tdDistHome2Exam" min="0" placeholder="0" onchange="recalcDays()"></div>
+      </div>
+      <div class="row-3">
+        <div class="form-group"><label>Start Date (duty)</label><input type="date" id="tdStartDate" onchange="recalcDays()"></div>
+        <div class="form-group"><label>End Date (duty)</label><input type="date" id="tdEndDate" onchange="recalcDays()"></div>
+        <div class="form-group"><label>Off Days (not on duty)</label><input type="number" id="tdOffDays" value="0" min="0" onchange="recalcDays()"></div>
+      </div>
+      <div class="row-3">
+        <div class="form-group"><label>TA Rate per km (Rs.)</label><input type="number" id="tdTARate" value="10" min="0" onchange="calcTA()"></div>
+        <div class="form-group"><label>DA Rate per Day (Rs.) — auto from BPS</label><input type="number" id="tdDARate" placeholder="1680" oninput="calcTA()"></div>
+        <div class="form-group"><label>Working Days (auto-calculated)</label><input type="number" id="tdWorkDays" readonly style="background:#f1f5f9"></div>
+        <div class="form-group"><label>Total DA Amount (Rs.)</label><input type="number" id="tdTotalDA" readonly style="background:#f1f5f9"></div>
+      </div>
+      <div id="daRateGuide" style="font-size:0.73rem;color:var(--text-muted);margin-top:4px"></div>
+
+      <div style="border:1.5px solid var(--border);border-radius:12px;padding:12px;margin:16px 0">
+        <h4 style="font-size:0.85rem;color:var(--primary);margin-bottom:8px">📅 Sundays Stayed at Center (Gazette Holidays)</h4>
+        <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px">Enter Sundays/holidays when you stayed at exam center. Sat &amp; Sun are auto-excluded from date range.</p>
+        <textarea id="tdGazetteDates" rows="2" placeholder="24-May-26, 31-May-26, 07-Jun-26" onchange="recalcDays()"></textarea>
+      </div>
+
+      <div id="tadaCalcPreview" class="alert alert-success" style="font-size:0.82rem"></div>
+      <button class="btn btn-success btn-block" style="font-size:0.9rem" onclick="saveTADAData();renderTADABill()">💾 Save &amp; Generate Bill</button>
+    </div>
+  </div>
+  <div id="tadaBillOutput" style="margin-top:16px"></div>
+</div>
+
+</div><!-- /container -->
+
+<!-- ════════════════════════════════════════════════ MODALS ════════════════════════════════════════════════ -->
+<div id="setupModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>⚙️ Center Configuration</h3>
+      <button onclick="closeSetupModal()" style="background:none;border:none;font-size:1.2rem;cursor:pointer">✕</button>
+    </div>
+    <div class="row-3">
+      <div class="form-group"><label>Center Code</label><input id="cfgCode"></div>
+      <div class="form-group"><label>Center Name</label><input id="cfgName"></div>
+      <div class="form-group"><label>Exam Name</label><input id="cfgExam"></div>
+    </div>
+    <div class="row-3">
+      <div class="form-group"><label>Superintendent</label><input id="cfgSup"></div>
+      <div class="form-group"><label>Dy. Superintendent</label><input id="cfgDy"></div>
+      <div class="form-group"><label>CSO Officer</label><input id="cfgCso"></div>
+    </div>
+    <button class="btn btn-success btn-block" onclick="saveCenterConfig()">💾 Save</button>
+  </div>
+</div>
+
+<div id="autoAssignModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>🎯 Auto-Assign Roll Numbers</h3>
+      <button onclick="closeAutoAssignModal()" style="background:none;border:none;font-size:1.2rem;cursor:pointer">✕</button>
+    </div>
+    <div id="autoAssignBody"></div>
+  </div>
+</div>
+
+<div id="editAttModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>✏️ Edit Attendance Record</h3>
+      <button onclick="closeEditAttModal()" style="background:none;border:none;font-size:1.2rem;cursor:pointer">✕</button>
+    </div>
+    <div id="editAttBody"></div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// DATA & STORAGE
+// ════════════════════════════════════════════════
+let appData = {
+  config: { code:"30105", name:"Govt High School Sahiwal", exam:"Matric Annual 2026", sup:"Dr. Ahmed", dy:"Mr. Aslam", cso:"Mr. Rizwan" },
+  rollMaster: {}, // NOW: {subject: {morning: [rolls], evening: [rolls]}}
+  sessions:   [],
+  attendance: [],
+  halls:      [],
+  tada: {
+    name:"", qual:"", desig:"", bps:15, basicPay:0, cnic:"",
+    homeStation:"", purpose:"", trainingCenter:"", examCenter:"", examCode:"",
+    startDate:"", endDate:"", offDays:0,
+    distHome2Train:0, distHome2Exam:0, taRate:10, daRate:1680,
+    trainingDate:"", role:"Superintendent", gazetteDates:""
+  }
+};
+
+const DEFAULT_SUBJECTS = ["English", "Urdu", "Mathematics", "Physics", "Chemistry", "Biology", "Islamic Studies", "Pak Studies", "Economics", "Civics", "Geology"];
+let selectedSubjects = [];
+let hallsArray = [];
+
+function saveToLocal() { localStorage.setItem("sahiwal_supt_v74", JSON.stringify(appData)); }
+function loadLocal() {
+  let raw = localStorage.getItem("sahiwal_supt_v74")
+         || localStorage.getItem("sahiwal_supt_v72")
+         || localStorage.getItem("sahiwal_supt_v71");
+  if (raw) try { appData = JSON.parse(raw); } catch(e) {}
+  appData.rollMaster = appData.rollMaster || {};
+  appData.sessions   = appData.sessions   || [];
+  appData.attendance = appData.attendance || [];
+  appData.halls      = appData.halls      || [];
+  appData.tada       = appData.tada       || {};
+  appData.config     = appData.config     || { code:"30105", name:"Govt High School Sahiwal", exam:"Matric Annual 2026", sup:"Dr. Ahmed", dy:"Mr. Aslam", cso:"Mr. Rizwan" };
+}
+loadLocal(); saveToLocal();
+
+// ════════════════════════════════════════════════
+// UTILITIES
+// ════════════════════════════════════════════════
+function showToast(msg) {
+  let t = document.getElementById("toastMsg");
+  t.innerText = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2400);
+}
+function toggleMobileMenu() { document.getElementById("mobileMenu").classList.toggle("open"); }
+
+function compressRolls(arr) {
+  if (!arr || !arr.length) return "Nil";
+  let nums = [...new Set(arr.map(Number))].sort((a,b)=>a-b);
+  let segs=[],i=0;
+  while(i<nums.length){
+    let s=nums[i],e=s;
+    while(i+1<nums.length&&nums[i+1]===e+1) e=nums[++i];
+    if(s===e) segs.push(String(s));
+    else{let es=String(e);segs.push(s+" to "+es.slice(Math.max(0,es.length-3)));}
+    i++;
+  }
+  return segs.join(", ");
+}
+
+// ════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════
+function switchSection(id) {
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id+"Section").classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(`[data-section="${id}"]`).forEach(b=>b.classList.add("active"));
+  document.querySelectorAll(".mob-item").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(`[data-mobile="${id}"]`).forEach(b=>b.classList.add("active"));
+  document.getElementById("mobileMenu").classList.remove("open");
+  if(id==="dashboard")   refreshDashboard();
+  if(id==="rollmaster")  renderRollMaster();
+  if(id==="seatplan")    { renderHallList(); renderSubjectSelector(); }
+  if(id==="attendance")  { refreshAttendanceTable(); populateAttSessionSelect(); }
+  if(id==="sf13")        renderSF13Report();
+  if(id==="tada")        loadTADAForm();
+}
+document.querySelectorAll(".nav-btn").forEach(b=>b.addEventListener("click",()=>switchSection(b.dataset.section)));
+document.querySelectorAll(".mob-item").forEach(b=>b.addEventListener("click",()=>switchSection(b.dataset.mobile)));
+
+// ════════════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════════════
+function refreshDashboard() {
+  let subjects = Object.keys(appData.rollMaster);
+  let totalRolls = subjects.reduce((s,k) => {
+    let sub = appData.rollMaster[k];
+    return s + ((sub.morning?.length||0) + (sub.evening?.length||0));
+  }, 0);
+  document.getElementById("statRollSubjects").innerText = subjects.length;
+  document.getElementById("statTotalRolls").innerText   = totalRolls;
+  document.getElementById("statSessions").innerText     = appData.sessions.length;
+  document.getElementById("statPresent").innerText      = appData.attendance.reduce((s,a)=>s+(a.presentCount||0),0);
+  document.getElementById("statAbsent").innerText       = appData.attendance.reduce((s,a)=>s+(a.absentRolls?.length||0),0);
+  document.getElementById("statCopies").innerText       = appData.attendance.reduce((s,a)=>s+(a.copiesSentCount||0),0);
+  let c=appData.config;
+  document.getElementById("centerInfoPreview").innerHTML=
+    `<div class="row-3">
+      <div><strong>Code:</strong> ${c.code}</div><div><strong>Center:</strong> ${c.name}</div><div><strong>Exam:</strong> ${c.exam}</div>
+      <div><strong>Superintendent:</strong> ${c.sup}</div><div><strong>Dy. Superintendent:</strong> ${c.dy}</div><div><strong>CSO Officer:</strong> ${c.cso}</div>
+    </div>`;
+  let recent=[...appData.attendance].reverse().slice(0,5);
+  document.getElementById("recentAttList").innerHTML = recent.length
+    ? `<table class="data-table"><thead><tr><th>Date</th><th>Subject</th><th>Shift</th><th>Present</th><th>Absent</th></tr></thead><tbody>
+       ${recent.map(r=>`<tr><td>${r.date}</td><td style="font-weight:600">${r.subject}</td><td><span class="badge ${r.shift==='M'?'badge-morning':'badge-evening'}">${r.shift==='M'?'Morning':'Evening'}</span></td><td style="color:var(--success);font-weight:700">${r.presentCount}</td><td style="color:var(--danger);font-weight:700">${r.absentRolls.length}</td></tr>`).join("")}
+       </tbody></table>`
+    : `<p style="color:var(--text-muted)">No attendance records yet.</p>`;
+}
+
+// ════════════════════════════════════════════════
+// CENTER CONFIG
+// ════════════════════════════════════════════════
+function openSetupModal(){
+  let c=appData.config;
+  ["Code","Name","Exam","Sup","Dy","Cso"].forEach(k=>document.getElementById("cfg"+k).value=c[k.toLowerCase()]||"");
+  document.getElementById("setupModal").classList.add("open");
+}
+function closeSetupModal(){document.getElementById("setupModal").classList.remove("open");}
+function saveCenterConfig(){
+  appData.config={
+    code:document.getElementById("cfgCode").value, name:document.getElementById("cfgName").value,
+    exam:document.getElementById("cfgExam").value, sup:document.getElementById("cfgSup").value,
+    dy:document.getElementById("cfgDy").value,     cso:document.getElementById("cfgCso").value
+  };
+  saveToLocal(); closeSetupModal(); refreshDashboard(); renderSF13Report();
+  showToast("Center config saved ✅");
+}
+
+// ════════════════════════════════════════════════
+// ROLL MASTER (NEW: with shift)
+// ════════════════════════════════════════════════
+function renderRollMaster() {
+  let sel = document.getElementById("rollSubjectSelect");
+  let allSubs = [...new Set([...DEFAULT_SUBJECTS, ...Object.keys(appData.rollMaster)])];
+  sel.innerHTML = '<option value="">-- Select subject --</option>' +
+    allSubs.map(s=>`<option value="${s}">${s}</option>`).join("");
+
+  let wrap = document.getElementById("rollSubjectCards");
+  let subjects = Object.keys(appData.rollMaster);
+  if(!subjects.length){
+    wrap.innerHTML = `<div class="alert alert-info">No subjects added yet. Click "+ Add Subject" to start.</div>`;
+    return;
+  }
+  wrap.innerHTML = subjects.map(sub => {
+    let data = appData.rollMaster[sub] || {morning:[], evening:[]};
+    let morningRolls = data.morning || [];
+    let eveningRolls = data.evening || [];
+    return `
+    <div class="roll-subject-card">
+      <div class="roll-subject-header">
+        <h4>
+          📘 ${sub}
+          <span class="roll-count-badge">M:${morningRolls.length} | E:${eveningRolls.length}</span>
+        </h4>
+        <div style="display:flex;gap:6px;flex-wrap:wrap" onclick="event.stopPropagation()">
+          <button class="btn btn-outline btn-sm" onclick="editSubjectRolls('${sub.replace(/'/g,"\\'")}')">✏️ Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSubjectRolls('${sub.replace(/'/g,"\\'")}')">🗑 Delete</button>
+        </div>
+      </div>
+      <div style="padding:10px 14px">
+        <div style="margin-bottom:8px">
+          <div style="font-size:0.75rem;font-weight:700;color:#1e40af;margin-bottom:4px">🌅 Morning</div>
+          <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#dbeafe;border-radius:8px;max-height:100px;overflow-y:auto">
+            ${morningRolls.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','M')" style="background:#fff;border-color:#1e40af">${r}</span>`).join("")}
+            ${morningRolls.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls yet</span>`:""}
+          </div>
+        </div>
+        <div>
+          <div style="font-size:0.75rem;font-weight:700;color:#92400e;margin-bottom:4px">🌙 Evening</div>
+          <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#ffedd5;border-radius:8px;max-height:100px;overflow-y:auto">
+            ${eveningRolls.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','E')" style="background:#fff;border-color:#92400e">${r}</span>`).join("")}
+            ${eveningRolls.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls yet</span>`:""}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function openAddSubjectRolls() {
+  document.getElementById("addSubjectPanelTitle").textContent = "➕ Add Subject Roll Numbers";
+  document.getElementById("rollSubjectName").value = "";
+  document.getElementById("rollNumbersInput").value = "";
+  document.getElementById("rollInputPreview").textContent = "";
+  document.getElementById("rollShift").value = "M";
+  document.getElementById("addSubjectPanel").style.display = "block";
+  document.getElementById("rollSubjectName").focus();
+}
+
+function editSubjectRolls(sub) {
+  document.getElementById("addSubjectPanelTitle").textContent = `✏️ Edit: ${sub}`;
+  document.getElementById("rollSubjectName").value = sub;
+  let sel = document.getElementById("rollSubjectSelect");
+  for(let o of sel.options){ if(o.value===sub){o.selected=true;break;} }
+  let data = appData.rollMaster[sub] || {morning:[], evening:[]};
+  let shift = document.getElementById("rollShift").value;
+  let rolls = (shift==="M" ? data.morning : data.evening) || [];
+  document.getElementById("rollNumbersInput").value = rolls.join(", ");
+  updateRollInputPreview();
+  document.getElementById("addSubjectPanel").style.display = "block";
+  document.getElementById("rollNumbersInput").focus();
+}
+
+function closeAddSubjectPanel() {
+  document.getElementById("addSubjectPanel").style.display = "none";
+}
+
+function rollSubjectSelectChange() {
+  let val = document.getElementById("rollSubjectSelect").value;
+  if(val) document.getElementById("rollSubjectName").value = val;
+}
+
+function updateRollInputPreview() {
+  let raw = document.getElementById("rollNumbersInput").value;
+  let rolls = raw.split(/[,\n\s]+/).map(p=>p.trim()).filter(Boolean);
+  let unique = [...new Set(rolls)];
+  document.getElementById("rollInputPreview").textContent =
+    unique.length ? `✅ ${unique.length} unique roll numbers detected` : "";
+}
+
+function saveSubjectRolls() {
+  let sub = (document.getElementById("rollSubjectName").value ||
+             document.getElementById("rollSubjectSelect").value).trim();
+  if(!sub){ showToast("Enter subject name"); return; }
+  let shift = document.getElementById("rollShift").value;
+  let raw = document.getElementById("rollNumbersInput").value;
+  let rolls = [...new Set(raw.split(/[,\n\s]+/).map(p=>p.trim()).filter(Boolean))];
+  if(!rolls.length){ showToast("Enter at least one roll number"); return; }
+  
+  if(!appData.rollMaster[sub]) appData.rollMaster[sub] = {morning:[], evening:[]};
+  if(shift==="M") appData.rollMaster[sub].morning = rolls;
+  else appData.rollMaster[sub].evening = rolls;
+  
+  if(!DEFAULT_SUBJECTS.includes(sub)) DEFAULT_SUBJECTS.push(sub);
+  saveToLocal();
+  closeAddSubjectPanel();
+  renderRollMaster();
+  renderSubjectSelector();
+  refreshDashboard();
+  showToast(`"${sub}" (${shift==="M"?"Morning":"Evening"}) — ${rolls.length} rolls saved ✅`);
+}
+
+function deleteSubjectRolls(sub) {
+  if(!confirm(`Delete all roll numbers for "${sub}"?`)) return;
+  delete appData.rollMaster[sub];
+  saveToLocal(); renderRollMaster(); refreshDashboard();
+  showToast(`Deleted: ${sub}`);
+}
+
+function removeSingleRoll(sub, roll, shift) {
+  if(!appData.rollMaster[sub]) return;
+  if(shift==="M") appData.rollMaster[sub].morning = (appData.rollMaster[sub].morning||[]).filter(r=>r!==roll);
+  else appData.rollMaster[sub].evening = (appData.rollMaster[sub].evening||[]).filter(r=>r!==roll);
+  saveToLocal(); renderRollMaster(); refreshDashboard();
+}
+
+// ════════════════════════════════════════════════
+// SUBJECT SELECTOR & HALL MANAGEMENT
+// ════════════════════════════════════════════════
+function renderSubjectSelector() {
+  let subs = Object.keys(appData.rollMaster).sort();
+  let wrap = document.getElementById("subjectSelectorWrap");
+  wrap.innerHTML = subs.map(sub => {
+    let isSelected = selectedSubjects.includes(sub);
+    return `<button class="btn ${isSelected?'btn-success':'btn-outline'} btn-sm" onclick="toggleSubjectSelection('${sub.replace(/'/g,"\\'")}')">
+      ${sub}
+    </button>`;
+  }).join("");
+}
+
+function toggleSubjectSelection(sub) {
+  if(selectedSubjects.includes(sub))
+    selectedSubjects = selectedSubjects.filter(s=>s!==sub);
+  else
+    selectedSubjects.push(sub);
+  renderSubjectSelector();
+}
+
+function renderHallList() {
+  if(!appData.halls.length) appData.halls = [{id:1, name:"Main Hall", lines:4, seatsPerLine:20}];
+  hallsArray = appData.halls;
+  let wrap = document.getElementById("hallConfigWrap");
+  wrap.innerHTML = appData.halls.map(h => `
+    <div style="border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px">
+      <div class="row-3">
+        <div class="form-group"><label>Hall Name</label><input value="${h.name.replace(/"/g,"&quot;")}" onchange="updateHallField(${h.id},'name',this.value)"></div>
+        <div class="form-group"><label>Lines (Columns)</label><input type="number" value="${h.lines}" min="1" max="20" onchange="updateHallField(${h.id},'lines',this.value)"></div>
+        <div class="form-group"><label>Seats per Line (Rows)</label><input type="number" value="${h.seatsPerLine}" min="1" max="60" onchange="updateHallField(${h.id},'seatsPerLine',this.value)"></div>
+      </div>
+    </div>`).join("");
+}
+
+function addNewHall() {
+  let maxId = Math.max(...(appData.halls.map(h=>h.id)||[0]));
+  appData.halls.push({id:maxId+1, name:`Hall ${maxId+1}`, lines:4, seatsPerLine:20});
+  saveToLocal();
+  renderHallList();
+  showToast("Hall added ✅");
+}
+
+function updateHallField(id, field, val) {
+  let h = appData.halls.find(x=>x.id===id);
+  if(h) h[field] = isNaN(+val)?val:+val;
+  saveToLocal();
+}
+
+function clearAllSeating() {
+  if(!confirm("Clear all seating data?")) return;
+  document.getElementById("multiSeatingOutput").innerHTML = "";
+  tempSubjectHalls = {};
+  showToast("Seating cleared");
+}
+
+// ════════════════════════════════════════════════
+// SEATING GRID — with Shift Separation
+// ════════════════════════════════════════════════
+let tempSubjectHalls = {};
+
+function initiateMultiSubjectSeating() {
+  if(!selectedSubjects.length){ showToast("Select at least 1 subject"); return; }
+  if(!hallsArray.length)       { showToast("Add at least one hall first"); return; }
+  let date=document.getElementById("seatDate").value;
+  if(!date){ showToast("Select exam date"); return; }
+  let shift    = document.getElementById("seatShift").value;
+  let building = document.getElementById("seatBuilding").value || "Main Hall";
+
+  let out = `<div class="alert alert-success">✅ Grids ready for ${selectedSubjects.length} subject(s) — ${date} — ${shift==="M"?"Morning":"Evening"}</div>`;
+
+  for(let sub of selectedSubjects){
+    let halls = hallsArray.map(h=>({
+      id:h.id, name:h.name, lines:h.lines, seatsPerLine:h.seatsPerLine,
+      rollMatrix: Array(h.lines).fill(0).map(()=>Array(h.seatsPerLine).fill(""))
+    }));
+    tempSubjectHalls[sub] = halls;
+    let sid = subId(sub);
+    let shiftData = shift==="M" ? (appData.rollMaster[sub]?.morning||[]) : (appData.rollMaster[sub]?.evening||[]);
+    let hasRolls = shiftData.length>0;
+    out += `
+      <div id="subj-block-${sid}" style="margin-top:20px;border:2px solid var(--primary);border-radius:14px;overflow:hidden">
+        <div style="background:var(--primary-bg);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <h4 style="font-size:0.9rem;color:var(--primary)">📘 ${sub} <span class="shift-badge ${shift==="M"?"morning":"evening"}">${shift==="M"?"Morning":"Evening"}</span> | ${date}</h4>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            ${hasRolls?`<button class="btn btn-warning btn-sm" onclick="openAutoAssign('${sub.replace(/'/g,"\\'")}')">🎯 Auto-Assign (${shiftData.length} rolls)</button>`:""}
+            <button class="btn btn-success btn-sm" onclick="saveSubjectSession('${sub}','${date}','${shift}','${building}')">💾 Save</button>
+            <button class="btn btn-outline btn-sm" onclick="clearSubjectRolls('${sub}')">🗑 Clear</button>
+          </div>
+        </div>
+        <div id="seating-editor-${sid}" style="padding:12px"></div>
+      </div>`;
+  }
+  out += `
+    <div style="margin-top:24px;padding:14px;background:#f0f9ff;border:1.5px solid var(--primary);border-radius:12px">
+      <h4 style="color:var(--primary);font-size:0.9rem;margin-bottom:12px">🖨️ Print Seating Plans</h4>
+      <div class="row-3" style="margin-bottom:12px">
+        <div class="form-group">
+          <label>Select Date to Print</label>
+          <select id="printDateSelect">
+            <option value="">-- All Dates --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Select Shift to Print</label>
+          <select id="printShiftSelect">
+            <option value="">-- All Shifts --</option>
+            <option value="M">Morning Only</option>
+            <option value="E">Evening Only</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <button class="btn btn-primary" onclick="printSeatingPlansFiltered()">🖨️ Print Selected</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-outline btn-sm" onclick="printSeatingPlansByDate()">📅 Print All by Date</button>
+        <button class="btn btn-outline btn-sm" onclick="printSeatingPlansByShift()">⏰ Print All by Shift</button>
+        <button class="btn btn-outline btn-sm" onclick="printSeatingPlansAll()">📋 Print Everything</button>
+      </div>
+    </div>`;
+  
+  document.getElementById("multiSeatingOutput").innerHTML = out;
+  
+  // Populate date selector
+  let uniqueDates = [...new Set(appData.sessions.map(s => s.date))].sort();
+  let dateSelect = document.getElementById("printDateSelect");
+  if(dateSelect) {
+    let options = '<option value="">-- All Dates --</option>';
+    uniqueDates.forEach(d => {
+      options += `<option value="${d}">${d}</option>`;
+    });
+    dateSelect.innerHTML = options;
+  }
+  
+  for(let sub of selectedSubjects) renderSubjectSeatingGrid(sub);
+  showToast(`Grids created for ${selectedSubjects.length} subject(s) - ${shift==="M"?"Morning":"Evening"}`);
+}
+
+function subId(sub){ return sub.replace(/\s+/g,"_").replace(/[^a-zA-Z0-9_]/g,""); }
+
+function renderSubjectSeatingGrid(subject) {
+  let el=document.getElementById(`seating-editor-${subId(subject)}`);
+  if(!el) return;
+  let halls=tempSubjectHalls[subject]; if(!halls) return;
+  let html=`<p style="font-size:0.72rem;color:var(--text-muted);margin-bottom:10px">💡 Type roll number → press <strong>Enter</strong> to auto-fill downward.</p>`;
+  halls.forEach((hall,hi)=>{
+    html+=`<div style="margin-bottom:18px">
+      <h5 style="background:#eef2ff;padding:5px 12px;border-radius:8px;margin-bottom:8px;font-size:0.82rem">${hall.name} — ${hall.lines} Lines × ${hall.seatsPerLine} Seats</h5>
+      <div style="overflow-x:auto"><table class="seat-grid-table"><thead><tr>
+        ${Array(hall.lines).fill(0).map((_,l)=>`<th>Line ${l+1}</th>`).join("")}
+      </tr></thead><tbody>`;
+    for(let row=0;row<hall.seatsPerLine;row++){
+      html+="<tr>";
+      for(let col=0;col<hall.lines;col++){
+        let val=hall.rollMatrix[col][row]||"";
+        html+=`<td class="seat-cell ${val?"filled":""}"><input type="text" class="seat-input"
+          data-sub="${subject}" data-hi="${hi}" data-col="${col}" data-row="${row}"
+          value="${val.replace(/"/g,"&quot;")}" placeholder="—"
+          onchange="updateSeatCell(this)" onkeydown="seatKeyDown(event,this)"></td>`;
+      }
+      html+="</tr>";
+    }
+    html+=`</tbody></table></div></div>`;
+  });
+  el.innerHTML=html;
+}
+
+function updateSeatCell(inp){
+  let{sub,hi,col,row}=inp.dataset;
+  if(tempSubjectHalls[sub]){
+    tempSubjectHalls[sub][+hi].rollMatrix[+col][+row]=inp.value.trim();
+    inp.parentElement.classList.toggle("filled",!!inp.value.trim());
+  }
+}
+
+function seatKeyDown(e,inp){
+  if(e.key!=="Enter") return;
+  e.preventDefault();
+  let{sub,hi,col,row}=inp.dataset;
+  let hall=tempSubjectHalls[sub]?.[+hi]; if(!hall) return;
+  let val=inp.value.trim();
+  if(val&&!isNaN(+val)){
+    let n=+val+1;
+    for(let r=+row+1;r<hall.seatsPerLine;r++){
+      if(!hall.rollMatrix[+col][r]) hall.rollMatrix[+col][r]=String(n++);
+      else break;
+    }
+    renderSubjectSeatingGrid(sub);
+    setTimeout(()=>{
+      let next=document.querySelector(`.seat-input[data-sub="${sub}"][data-hi="${hi}"][data-col="${col}"][data-row="${+row+1}"]`);
+      if(next) next.focus();
+    },20);
+  } else {
+    let next=document.querySelector(`.seat-input[data-sub="${sub}"][data-hi="${hi}"][data-col="${col}"][data-row="${+row+1}"]`);
+    if(next) next.focus();
+  }
+}
+
+function clearSubjectRolls(sub){
+  if(!confirm(`Clear all rolls for ${sub}?`)) return;
+  if(tempSubjectHalls[sub]){
+    tempSubjectHalls[sub].forEach(h=>{ h.rollMatrix=Array(h.lines).fill(0).map(()=>Array(h.seatsPerLine).fill("")); });
+    renderSubjectSeatingGrid(sub); showToast(`Cleared: ${sub}`);
+  }
+}
+
+function saveSubjectSession(sub,date,shift,building){
+  let halls=tempSubjectHalls[sub];
+  if(!halls){ showToast("No data"); return; }
+  let allRolls=halls.flatMap(h=>h.rollMatrix.flat()).filter(r=>r&&r.trim());
+  if(!allRolls.length){ showToast(`No rolls entered for ${sub}`); return; }
+  let sess={id:Date.now()+Math.random(),date,sub,shift,paper:"Annual",building,
+    halls:halls.map(h=>({...h,rollMatrix:h.rollMatrix.map(col=>[...col])}))};
+  appData.sessions=appData.sessions.filter(s=>!(s.date===date&&s.shift===shift&&s.sub===sub));
+  appData.sessions.push(sess);
+  saveToLocal(); populateAttSessionSelect(); refreshDashboard();
+  showToast(`"${sub}" session saved ✅`);
+}
+
+// ════════════════════════════════════════════════
+// AUTO-ASSIGN FROM ROLL MASTER
+// ════════════════════════════════════════════════
+let _autoAssignSub = null;
+let _autoAssignSelected = [];
+
+function openAutoAssign(sub) {
+  _autoAssignSub = sub;
+  let shift = document.getElementById("seatShift").value;
+  let rolls = (shift==="M" ? appData.rollMaster[sub]?.morning : appData.rollMaster[sub]?.evening) || [];
+  let halls = tempSubjectHalls[sub] || [];
+  let totalSeats = halls.reduce((s,h)=>s+(h.lines*h.seatsPerLine),0);
+  let placed = new Set(halls.flatMap(h=>h.rollMatrix.flat()).filter(r=>r&&r.trim()));
+  _autoAssignSelected = rolls.filter(r=>!placed.has(r));
+
+  let body = `
+    <div class="alert alert-info">
+      Subject: <strong>${sub}</strong> — ${shift==="M"?"Morning":"Evening"} &nbsp;|&nbsp;
+      Total Rolls: <strong>${rolls.length}</strong> &nbsp;|&nbsp; Available Seats: <strong>${totalSeats}</strong>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+      <div style="font-size:0.8rem;color:var(--text-muted)">Click to select/deselect. Green = already placed.</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-outline btn-sm" onclick="autoAssignSelectAll()">Select All Unplaced</button>
+        <button class="btn btn-outline btn-sm" onclick="autoAssignSelectNone()">Deselect All</button>
+      </div>
+    </div>
+    <div id="autoAssignPills" style="display:flex;flex-wrap:wrap;gap:5px;max-height:260px;overflow-y:auto;border:1.5px solid var(--border);border-radius:12px;padding:10px;margin-bottom:14px">
+      ${rolls.map(r=>{
+        let isPlaced=placed.has(r);
+        let isSel=_autoAssignSelected.includes(r);
+        return `<span class="roll-pill ${isPlaced?"selected-for-seating":isSel?"selected-for-seating":""}"
+          id="aapill-${r}" onclick="toggleAutoAssignRoll('${r}')"
+          title="${isPlaced?"Already placed":"Click to select"}"
+          style="${isPlaced?"cursor:not-allowed;opacity:0.6":""}">${r}${isPlaced?" ✓":""}</span>`;
+      }).join("")}
+    </div>
+    <div id="autoAssignSummary" class="alert alert-success"></div>
+    <div style="border:1.5px solid var(--border);border-radius:12px;padding:12px;margin-bottom:14px">
+      <h4 style="font-size:0.85rem;color:var(--primary);margin-bottom:10px">📐 Fill Order</h4>
+      <div class="row-2">
+        <div class="form-group">
+          <label>Fill Direction</label>
+          <select id="fillDirection">
+            <option value="col-first">Column-first (fill Line 1 top→bottom, then Line 2...)</option>
+            <option value="row-first">Row-first (fill Row 1 across all Lines, then Row 2...)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Hall Fill Order</label>
+          <select id="hallFillOrder">
+            <option value="sequential">Sequential (Hall 1 first, then Hall 2...)</option>
+            <option value="round-robin">Round-robin (spread evenly)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-success" onclick="applyAutoAssign()">🎯 Apply Auto-Assign</button>
+      <button class="btn btn-outline" onclick="closeAutoAssignModal()">Cancel</button>
+    </div>`;
+
+  document.getElementById("autoAssignBody").innerHTML = body;
+  updateAutoAssignSummary();
+  document.getElementById("autoAssignModal").classList.add("open");
+}
+
+function closeAutoAssignModal() {
+  document.getElementById("autoAssignModal").classList.remove("open");
+  _autoAssignSub = null; _autoAssignSelected = [];
+}
+
+function toggleAutoAssignRoll(r) {
+  let placed = new Set((tempSubjectHalls[_autoAssignSub]||[]).flatMap(h=>h.rollMatrix.flat()).filter(x=>x&&x.trim()));
+  if(placed.has(r)) return;
+  if(_autoAssignSelected.includes(r))
+    _autoAssignSelected = _autoAssignSelected.filter(x=>x!==r);
+  else
+    _autoAssignSelected.push(r);
+  let pill = document.getElementById(`aapill-${r}`);
+  if(pill) pill.classList.toggle("selected-for-seating", _autoAssignSelected.includes(r));
+  updateAutoAssignSummary();
+}
+
+function autoAssignSelectAll() {
+  let placed = new Set((tempSubjectHalls[_autoAssignSub]||[]).flatMap(h=>h.rollMatrix.flat()).filter(r=>r&&r.trim()));
+  let shift = document.getElementById("seatShift").value;
+  let rolls = (shift==="M" ? appData.rollMaster[_autoAssignSub]?.morning : appData.rollMaster[_autoAssignSub]?.evening) || [];
+  _autoAssignSelected = rolls.filter(r=>!placed.has(r));
+  rolls.forEach(r=>{
+    let pill=document.getElementById(`aapill-${r}`);
+    if(pill&&!placed.has(r)) pill.classList.add("selected-for-seating");
+  });
+  updateAutoAssignSummary();
+}
+
+function autoAssignSelectNone() {
+  _autoAssignSelected = [];
+  (appData.rollMaster[_autoAssignSub]||[]).forEach(r=>{
+    let pill=document.getElementById(`aapill-${r}`);
+    if(pill) pill.classList.remove("selected-for-seating");
+  });
+  updateAutoAssignSummary();
+}
+
+function updateAutoAssignSummary() {
+  let halls=tempSubjectHalls[_autoAssignSub]||[];
+  let totalSeats=halls.reduce((s,h)=>s+(h.lines*h.seatsPerLine),0);
+  let placed=halls.flatMap(h=>h.rollMatrix.flat()).filter(r=>r&&r.trim()).length;
+  let available=totalSeats-placed;
+  let el=document.getElementById("autoAssignSummary");
+  if(el) el.innerHTML=`Selected: <strong>${_autoAssignSelected.length}</strong> rolls &nbsp;|&nbsp; Empty seats: <strong>${available}</strong> &nbsp;|&nbsp;
+    ${_autoAssignSelected.length>available?`<span style="color:var(--danger)">⚠️ Won't fit</span>`:"✅ Will fit"}`;
+}
+
+function applyAutoAssign() {
+  if(!_autoAssignSelected.length){ showToast("No rolls selected"); return; }
+  let halls = tempSubjectHalls[_autoAssignSub];
+  if(!halls){ closeAutoAssignModal(); return; }
+  let direction  = document.getElementById("fillDirection").value;
+  let hallOrder  = document.getElementById("hallFillOrder").value;
+  let emptySlots = [];
+  if(hallOrder==="sequential"){
+    halls.forEach((hall,hi)=>{
+      if(direction==="col-first"){
+        for(let col=0;col<hall.lines;col++)
+          for(let row=0;row<hall.seatsPerLine;row++)
+            if(!hall.rollMatrix[col][row]) emptySlots.push({hi,col,row});
+      } else {
+        for(let row=0;row<hall.seatsPerLine;row++)
+          for(let col=0;col<hall.lines;col++)
+            if(!hall.rollMatrix[col][row]) emptySlots.push({hi,col,row});
+      }
+    });
+  } else {
+    let maxRows=Math.max(...halls.map(h=>h.seatsPerLine));
+    let maxCols=Math.max(...halls.map(h=>h.lines));
+    if(direction==="col-first"){
+      for(let col=0;col<maxCols;col++)
+        for(let row=0;row<maxRows;row++)
+          halls.forEach((hall,hi)=>{
+            if(col<hall.lines&&row<hall.seatsPerLine&&!hall.rollMatrix[col][row])
+              emptySlots.push({hi,col,row});
+          });
+    } else {
+      for(let row=0;row<maxRows;row++)
+        halls.forEach((hall,hi)=>{
+          for(let col=0;col<hall.lines;col++)
+            if(row<hall.seatsPerLine&&!hall.rollMatrix[col][row])
+              emptySlots.push({hi,col,row});
+        });
+    }
+  }
+  _autoAssignSelected.forEach((roll,idx)=>{
+    if(idx<emptySlots.length){
+      let {hi,col,row}=emptySlots[idx];
+      halls[hi].rollMatrix[col][row]=roll;
+    }
+  });
+  renderSubjectSeatingGrid(_autoAssignSub);
+  closeAutoAssignModal();
+  showToast(`Auto-assigned ${_autoAssignSelected.length} rolls ✅`);
+}
+
+// ════════════════════════════════════════════════
+// ATTENDANCE
+// ════════════════════════════════════════════════
+function populateAttSessionSelect() {
+  let sel = document.getElementById("attSessionSelect");
+  if(!appData.sessions.length) {
+    sel.innerHTML = `<option>No sessions yet</option>`;
+    return;
+  }
+  sel.innerHTML = appData.sessions.map((s,i) => 
+    `<option value="${i}">${s.sub} | ${s.shift==="M"?"Morning":"Evening"} | ${s.date}</option>`
+  ).join("");
+}
+
+function saveAttendance() {
+  let si = +document.getElementById("attSessionSelect").value;
+  let sess = appData.sessions[si];
+  if(!sess) { showToast("Select a session"); return; }
+  let absentRaw = document.getElementById("absentRollsInput").value;
+  let absent = absentRaw.split(/[,\n\s]+/).map(p=>p.trim()).filter(Boolean);
+  let allRolls = sess.halls.flatMap(h=>h.rollMatrix.flat()).filter(r=>r&&r.trim());
+  let present = allRolls.filter(r=>!absent.includes(r));
+  let att = {
+    id:sess.id, date:sess.date, subject:sess.sub, shift:sess.shift, paper:sess.paper,
+    total:allRolls.length, presentRolls:present, presentCount:present.length,
+    absentRolls:absent, copiesSentCount:present.length,
+    sentTo:document.getElementById("copiesSentToInput").value, note:document.getElementById("remarksInput").value
+  };
+  let idx = appData.attendance.findIndex(a=>a.id===sess.id);
+  if(idx>=0) appData.attendance[idx]=att;
+  else appData.attendance.push(att);
+  saveToLocal(); refreshAttendanceTable(); refreshDashboard(); renderSF13Report();
+  showToast("Attendance saved ✅");
+}
+
+function refreshAttendanceTable() {
+  let wrap = document.getElementById("attTableContainer");
+  if(!appData.attendance.length) {
+    wrap.innerHTML = `<div class="alert alert-info">No attendance records yet.</div>`;
+    return;
+  }
+  wrap.innerHTML = `<table class="data-table">
+    <thead><tr>
+      <th>Date</th><th>Subject</th><th>Shift</th><th>Total</th><th>Present</th><th>Absent</th><th>Copies</th><th>Sent To</th><th>Actions</th>
+    </tr></thead>
+    <tbody>
+      ${appData.attendance.map((a,i) => `<tr>
+        <td>${a.date}</td>
+        <td style="font-weight:600">${a.subject}</td>
+        <td><span class="badge ${a.shift==='M'?'badge-morning':'badge-evening'}">${a.shift==='M'?'Morning':'Evening'}</span></td>
+        <td style="text-align:center">${a.total}</td>
+        <td style="text-align:center;color:var(--success);font-weight:700">${a.presentCount}</td>
+        <td style="text-align:center;color:var(--danger);font-weight:700">${a.absentRolls.length}</td>
+        <td style="text-align:center">${a.copiesSentCount}</td>
+        <td>${a.sentTo||"—"}</td>
+        <td style="display:flex;gap:4px"><button class="btn btn-outline btn-sm" onclick="editAttendance(${i})">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteAttendance(${i})">🗑</button></td>
+      </tr>`).join("")}
+    </tbody>
+  </table>`;
+}
+
+function editAttendance(idx) {
+  let att = appData.attendance[idx];
+  let body = `
+    <div class="form-group"><label>Date</label><input id="editDate" value="${att.date}" disabled></div>
+    <div class="form-group"><label>Subject</label><input id="editSubject" value="${att.subject}" disabled></div>
+    <div class="form-group"><label>Shift</label><input id="editShift" value="${att.shift==='M'?'Morning':'Evening'}" disabled></div>
+    <div class="form-group"><label>Total Roll Numbers</label><input id="editTotal" value="${att.total}" readonly style="background:#f1f5f9"></div>
+    <div class="form-group"><label>Absent Roll Numbers</label><textarea id="editAbsentRolls" rows="2">${att.absentRolls.join(", ")}</textarea><div id="editPreview" style="font-size:0.75rem;color:var(--success);margin-top:4px"></div></div>
+    <div class="form-group"><label>Copies Sent To</label><input id="editCopiesSentTo" value="${att.sentTo||'CSO'}"></div>
+    <div class="form-group"><label>Remarks</label><textarea id="editRemarks" rows="2">${att.note||""}</textarea></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-success" onclick="saveEditAttendance(${idx})">💾 Save</button>
+      <button class="btn btn-outline" onclick="closeEditAttModal()">Cancel</button>
+    </div>`;
+  document.getElementById("editAttBody").innerHTML = body;
+  document.getElementById("editAbsentRolls").addEventListener("input", updateEditPreview);
+  document.getElementById("editAttModal").classList.add("open");
+}
+
+function updateEditPreview() {
+  let absent = document.getElementById("editAbsentRolls").value.split(/[,\n\s]+/).map(p=>p.trim()).filter(Boolean);
+  document.getElementById("editPreview").innerText = `${absent.length} absent rolls`;
+}
+
+function closeEditAttModal() {
+  document.getElementById("editAttModal").classList.remove("open");
+}
+
+function saveEditAttendance(idx) {
+  let att = appData.attendance[idx];
+  let absent = document.getElementById("editAbsentRolls").value.split(/[,\n\s]+/).map(p=>p.trim()).filter(Boolean);
+  let present = att.total - absent.length;
+  att.absentRolls = absent;
+  att.presentCount = Math.max(0,present);
+  att.copiesSentCount = present;
+  att.sentTo = document.getElementById("editCopiesSentTo").value;
+  att.note = document.getElementById("editRemarks").value;
+  saveToLocal(); closeEditAttModal(); refreshAttendanceTable(); refreshDashboard(); renderSF13Report();
+  showToast("Attendance updated ✅");
+}
+
+function deleteAttendance(idx) {
+  if(!confirm("Delete this record?")) return;
+  appData.attendance.splice(idx,1);
+  saveToLocal(); refreshAttendanceTable(); refreshDashboard(); renderSF13Report();
+  showToast("Record deleted");
+}
+
+// ════════════════════════════════════════════════
+// SF-13 REPORT (UPDATED: No Sr.#, no Total col, print heading repeat)
+// ════════════════════════════════════════════════
+function renderSF13Report(){
+  let wrap=document.getElementById("sf13ReportContainer");
+  if(!appData.attendance.length){wrap.innerHTML=`<div class="alert alert-info">No attendance records found.</div>`;return;}
+  let cfg=appData.config;
+  let dateMap={};
+  appData.attendance.forEach(a=>{(dateMap[a.date]=dateMap[a.date]||[]).push(a);});
+  let dates=Object.keys(dateMap).sort();
+  let totPres=appData.attendance.reduce((s,a)=>s+(a.presentCount||0),0);
+  let totAbs=appData.attendance.reduce((s,a)=>s+(a.absentRolls?.length||0),0);
+  let rows="";
+  dates.forEach(date=>{
+    dateMap[date].forEach((att,ri)=>{
+      let cp=compressRolls(att.presentRolls);
+      rows+=`<tr>`;
+      if(ri===0) rows+=`<td class="td-date-vertical" rowspan="${dateMap[date].length}" style="border:1px solid #333">${date}</td>`;
+      rows+=`<td style="border:1px solid #333;padding:6px;font-weight:600">${att.subject}</td>
+        <td style="border:1px solid #333;padding:6px">${att.shift==="M"?"Morning":"Evening"}</td>
+        <td style="border:1px solid #333;padding:6px">${att.paper||"Annual"}</td>
+        <td style="border:1px solid #333;padding:6px;font-size:9.5px;font-family:monospace;word-break:break-all;max-width:240px">${cp}</td>
+        <td style="border:1px solid #333;padding:6px;text-align:center;font-weight:700">${att.presentCount}</td>
+        <td style="border:1px solid #333;padding:6px">${att.sentTo||"CSO"}</td>
+        <td style="border:1px solid #333;padding:6px;font-size:9.5px;font-family:monospace;color:#b91c1c;word-break:break-all">${att.absentRolls.join(", ")||"—"}</td></tr>`;
+    });
+  });
+  wrap.innerHTML=`<div style="border:2px solid #1e293b;padding:20px;background:white;margin-top:8px">
+    <div class="sf13-heading" style="text-align:center;border-bottom:2px solid #000;padding-bottom:12px;margin-bottom:14px">
+      <div style="font-size:0.75rem;letter-spacing:1px;color:#555;font-family:serif">بورڈ آف انٹرمیڈیٹ اینڈ سیکنڈری ایجوکیشن، ساہیوال</div>
+      <h3 style="margin:5px 0;font-size:1.1rem">BOARD OF INTERMEDIATE &amp; SECONDARY EDUCATION, SAHIWAL</h3>
+      <h4 style="margin:3px 0;font-size:0.9rem">فارم نمبر SF-13 (ii) — حاضری شیٹ</h4>
+      <h4 style="margin:3px 0;font-size:0.9rem">SF-13 (ii) — EXAMINATION ATTENDANCE SHEET</h4>
+      <p style="margin-top:8px;font-size:0.82rem"><strong>Center:</strong> ${cfg.name} &nbsp;|&nbsp; <strong>Code:</strong> ${cfg.code} &nbsp;|&nbsp; <strong>Exam:</strong> ${cfg.exam}</p>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:0.75rem">
+      <thead><tr>
+        <th style="border:1px solid #333;padding:8px 6px;width:46px;font-weight:700">Date</th>
+        <th style="border:1px solid #333;padding:8px 6px;font-weight:700">Subject</th>
+        <th style="border:1px solid #333;padding:8px 6px;font-weight:700">Shift</th>
+        <th style="border:1px solid #333;padding:8px 6px;font-weight:700">Paper</th>
+        <th style="border:1px solid #333;padding:8px 6px;font-weight:700">Present Roll Numbers</th>
+        <th style="border:1px solid #333;padding:8px 6px;width:44px;font-weight:700">Copies</th>
+        <th style="border:1px solid #333;padding:8px 6px;font-weight:700">Sent To</th>
+        <th style="border:1px solid #333;padding:8px 6px;font-weight:700">Absent Roll Numbers</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr style="background:#f1f5f9;font-weight:700">
+        <td colspan="4" style="border:1px solid #333;padding:8px 6px;text-align:right">TOTAL</td>
+        <td style="border:1px solid #333;padding:8px 6px"></td>
+        <td style="border:1px solid #333;padding:8px 6px;text-align:center;color:#15803d">${totPres}</td>
+        <td style="border:1px solid #333;padding:8px 6px"></td>
+        <td style="border:1px solid #333;padding:8px 6px;text-align:center;color:#b91c1c">${totAbs} absent</td>
+      </tr></tfoot>
+    </table>
+    <div style="display:flex;justify-content:space-between;margin-top:28px;padding-top:16px;border-top:1px dashed #999">
+      <div style="text-align:center"><div style="border-top:1px solid #333;width:160px;margin:0 auto;padding-top:5px"><strong>Superintendent</strong><br><small>${cfg.sup}</small></div></div>
+      <div style="text-align:center"><div style="border-top:1px solid #333;width:160px;margin:0 auto;padding-top:5px"><strong>Dy. Superintendent</strong><br><small>${cfg.dy}</small></div></div>
+      <div style="text-align:center"><div style="border-top:1px solid #333;width:160px;margin:0 auto;padding-top:5px"><strong>CSO Officer</strong><br><small>${cfg.cso}</small></div></div>
+    </div>
+    <div class="no-print" style="text-align:center;margin-top:16px">
+      <button class="btn btn-primary btn-sm" onclick="printSF13Only()">🖨️ Print SF-13</button>
+      <button class="btn btn-outline btn-sm" onclick="exportSF13ToExcel()">📊 Export Excel</button>
+    </div>
+  </div>`;
+}
+
+function printSF13Only(){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("print-target"));
+  document.getElementById("sf13Section").classList.add("print-target");
+  window.print();
+  document.getElementById("sf13Section").classList.remove("print-target");
+}
+
+function exportSF13ToExcel(){
+  let data=appData.attendance.map((a,i)=>({
+    "Date":a.date,
+    "Subject":a.subject,
+    "Shift":a.shift==="M"?"Morning":"Evening",
+    "Paper":a.paper||"Annual",
+    "Present Rolls":compressRolls(a.presentRolls),
+    "Copies":a.presentCount,
+    "Sent To":a.sentTo||"CSO",
+    "Absent Rolls":a.absentRolls.join(", ")
+  }));
+  let ws=XLSX.utils.json_to_sheet(data),wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"SF13_Report");
+  XLSX.writeFile(wb,`SF13_${new Date().toISOString().slice(0,10)}.xlsx`);
+  showToast("Excel exported 📊");
+}
+
+// ════════════════════════════════════════════════
+// BACKUP / RESTORE
+// ════════════════════════════════════════════════
+function exportBackup(){
+  let b=new Blob([JSON.stringify(appData,null,2)],{type:"application/json"});
+  let a=document.createElement("a");a.href=URL.createObjectURL(b);
+  a.download=`supt_backup_${new Date().toISOString().slice(0,10)}.json`;a.click();
+  showToast("Backup saved 💾");
+}
+function importBackup(inp){
+  let f=inp.files[0];if(!f) return;
+  let fr=new FileReader();
+  fr.onload=e=>{try{appData=JSON.parse(e.target.result);saveToLocal();location.reload();}catch(ex){showToast("Invalid file ❌");}};
+  fr.readAsText(f);
+}
+
+function printSeatingPlansFiltered() {
+  let selectedDate = document.getElementById("printDateSelect")?.value || "";
+  let selectedShift = document.getElementById("printShiftSelect")?.value || "";
+  
+  if(!appData.sessions.length) {
+    showToast("No seating sessions saved yet");
+    return;
+  }
+  
+  let cfg = appData.config;
+  let sessions = appData.sessions;
+  
+  // Filter by date if selected
+  if(selectedDate) {
+    sessions = sessions.filter(s => s.date === selectedDate);
+  }
+  
+  // Filter by shift if selected
+  if(selectedShift) {
+    sessions = sessions.filter(s => s.shift === selectedShift);
+  }
+  
+  if(!sessions.length) {
+    showToast("No sessions found for selected filters");
+    return;
+  }
+  
+  let filterLabel = `Date: ${selectedDate || 'All'} | Shift: ${selectedShift ? (selectedShift === 'M' ? 'Morning' : 'Evening') : 'All'}`;
+  
+  let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Seating Plans - ${filterLabel}</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      .page { page-break-after: always; margin-bottom: 40px; border: 1px solid #ccc; padding: 20px; }
+      .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+      .header h2 { margin: 5px 0; font-size: 16px; }
+      .header p { margin: 3px 0; font-size: 12px; color: #555; }
+      .filter-info { background: #e8f4f8; padding: 8px; margin-bottom: 12px; font-size: 11px; border: 1px solid #0f3b5f; border-radius: 4px; }
+      .subject-block { margin-bottom: 20px; }
+      .subject-header { background: #f0f4f8; padding: 8px 10px; border: 1px solid #ddd; margin-bottom: 8px; font-weight: bold; font-size: 12px; }
+      table { width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 12px; }
+      th { background: #d0d8e0; border: 1px solid #999; padding: 4px; text-align: center; font-weight: bold; }
+      td { border: 1px solid #999; padding: 4px; text-align: center; }
+      .roll { font-family: monospace; }
+      .info-box { background: #f9f9f9; padding: 8px; margin-bottom: 12px; font-size: 10px; border: 1px solid #ddd; }
+      @media print { body { margin: 0; } .page { page-break-inside: avoid; } }
+    </style>
+  </head><body>
+    <div class="page">
+      <div class="header">
+        <h2>📊 Seating Plan Report</h2>
+        <p><strong>Center:</strong> ${cfg.name} (${cfg.code}) | <strong>Exam:</strong> ${cfg.exam}</p>
+        <div class="filter-info"><strong>Filter:</strong> ${filterLabel}</div>
+        <p>Printed: ${new Date().toLocaleString()}</p>
+      </div>`;
+  
+  sessions.forEach(sess => {
+    html += `<div class="subject-block">
+      <div class="subject-header">
+        📘 ${sess.sub} — ${sess.shift === 'M' ? '🌅 Morning' : '🌙 Evening'} | ${sess.date} | ${sess.building || 'Main Hall'}
+      </div>
+      <div class="info-box">
+        <strong>Date:</strong> ${sess.date} | <strong>Shift:</strong> ${sess.shift === 'M' ? 'Morning' : 'Evening'} | <strong>Halls:</strong> ${sess.halls.map(h => h.name).join(', ')}
+      </div>`;
+    
+    sess.halls.forEach(hall => {
+      let totalRolls = 0;
+      let rolls = [];
+      for(let col = 0; col < hall.lines; col++) {
+        for(let row = 0; row < hall.seatsPerLine; row++) {
+          let r = hall.rollMatrix[col][row];
+          if(r) {
+            rolls.push(r);
+            totalRolls++;
+          }
+        }
+      }
+      
+      html += `<div style="margin-bottom: 12px;">
+        <div style="font-weight: bold; font-size: 10px; margin-bottom: 4px;">${hall.name} (${hall.lines}L × ${hall.seatsPerLine}S = ${hall.lines * hall.seatsPerLine} seats) — ${totalRolls} rolls seated</div>
+        <table>
+          <thead><tr>${Array(hall.lines).fill(0).map((_,i) => `<th>L${i+1}</th>`).join('')}</tr></thead>
+          <tbody>`;
+      
+      for(let row = 0; row < hall.seatsPerLine; row++) {
+        html += '<tr>';
+        for(let col = 0; col < hall.lines; col++) {
+          let val = hall.rollMatrix[col][row] || '';
+          html += `<td class="roll" style="background: ${val ? '#e8f5e9' : '#fff'}">${val}</td>`;
+        }
+        html += '</tr>';
+      }
+      
+      html += `</tbody></table>
+        <div style="font-size: 9px; color: #555; margin-top: 4px;">
+          <strong>Rolls:</strong> ${rolls.join(', ') || 'None'}
+        </div>
+      </div>`;
+    });
+    
+    html += `</div>`;
+  });
+  
+  html += `</div></body></html>`;
+  
+  let printWindow = window.open('', '_blank');
+  printWindow.document.write(html);
+  printWindow.document.close();
+  setTimeout(() => printWindow.print(), 500);
+  showToast(`Print dialog opened - ${filterLabel} 🖨️`);
+}
+
+function generateSeatingPlanHTML(filterType) {
+  // filterType: 'date', 'shift', or 'all'
+  if(!appData.sessions.length) {
+    showToast("No seating sessions saved yet");
+    return;
+  }
+  
+  let cfg = appData.config;
+  let grouped = {};
+  
+  if(filterType === 'date') {
+    appData.sessions.forEach(sess => {
+      if(!grouped[sess.date]) grouped[sess.date] = [];
+      grouped[sess.date].push(sess);
+    });
+  } else if(filterType === 'shift') {
+    appData.sessions.forEach(sess => {
+      let key = sess.shift === 'M' ? 'Morning' : 'Evening';
+      if(!grouped[key]) grouped[key] = [];
+      grouped[key].push(sess);
+    });
+  } else {
+    grouped['All Sessions'] = appData.sessions;
+  }
+  
+  let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Seating Plans</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      .page { page-break-after: always; margin-bottom: 40px; border: 1px solid #ccc; padding: 20px; }
+      .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+      .header h2 { margin: 5px 0; font-size: 16px; }
+      .header p { margin: 3px 0; font-size: 12px; color: #555; }
+      .section-title { background: #e8f4f8; padding: 8px 12px; margin: 15px 0 10px 0; border-left: 4px solid #0f3b5f; font-weight: bold; font-size: 13px; }
+      .subject-block { margin-bottom: 20px; }
+      .subject-header { background: #f0f4f8; padding: 8px 10px; border: 1px solid #ddd; margin-bottom: 8px; font-weight: bold; font-size: 12px; }
+      table { width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 12px; }
+      th { background: #d0d8e0; border: 1px solid #999; padding: 4px; text-align: center; font-weight: bold; }
+      td { border: 1px solid #999; padding: 4px; text-align: center; }
+      .roll { font-family: monospace; }
+      .info-box { background: #f9f9f9; padding: 8px; margin-bottom: 12px; font-size: 10px; border: 1px solid #ddd; }
+      @media print { body { margin: 0; } .page { page-break-inside: avoid; } }
+    </style>
+  </head><body>`;
+  
+  Object.keys(grouped).forEach(groupKey => {
+    html += `<div class="page">
+      <div class="header">
+        <h2>📊 Seating Plan — ${groupKey}</h2>
+        <p><strong>Center:</strong> ${cfg.name} (${cfg.code}) | <strong>Exam:</strong> ${cfg.exam}</p>
+        <p>Printed: ${new Date().toLocaleString()}</p>
+      </div>`;
+    
+    let sessions = grouped[groupKey];
+    let sessionsByDate = {};
+    sessions.forEach(sess => {
+      if(!sessionsByDate[sess.date]) sessionsByDate[sess.date] = {};
+      if(!sessionsByDate[sess.date][sess.sub]) sessionsByDate[sess.date][sess.sub] = [];
+      sessionsByDate[sess.date][sess.sub].push(sess);
+    });
+    
+    Object.keys(sessionsByDate).sort().forEach(date => {
+      html += `<div class="section-title">📅 ${date}</div>`;
+      Object.keys(sessionsByDate[date]).forEach(subj => {
+        sessionsByDate[date][subj].forEach(sess => {
+          html += `<div class="subject-block">
+            <div class="subject-header">
+              ${subj} — ${sess.shift === 'M' ? '🌅 Morning' : '🌙 Evening'} | ${sess.building || 'Main Hall'}
+            </div>
+            <div class="info-box">
+              <strong>Session:</strong> ${date} | <strong>Shift:</strong> ${sess.shift === 'M' ? 'Morning' : 'Evening'} | <strong>Halls:</strong> ${sess.halls.map(h => h.name).join(', ')}
+            </div>`;
+          
+          sess.halls.forEach(hall => {
+            let totalRolls = 0;
+            let rolls = [];
+            for(let col = 0; col < hall.lines; col++) {
+              for(let row = 0; row < hall.seatsPerLine; row++) {
+                let r = hall.rollMatrix[col][row];
+                if(r) {
+                  rolls.push(r);
+                  totalRolls++;
+                }
+              }
+            }
+            
+            html += `<div style="margin-bottom: 12px;">
+              <div style="font-weight: bold; font-size: 10px; margin-bottom: 4px;">${hall.name} (${hall.lines}L × ${hall.seatsPerLine}S = ${hall.lines * hall.seatsPerLine} seats) — ${totalRolls} rolls seated</div>
+              <table>
+                <thead><tr>${Array(hall.lines).fill(0).map((_,i) => `<th>L${i+1}</th>`).join('')}</tr></thead>
+                <tbody>`;
+            
+            for(let row = 0; row < hall.seatsPerLine; row++) {
+              html += '<tr>';
+              for(let col = 0; col < hall.lines; col++) {
+                let val = hall.rollMatrix[col][row] || '';
+                html += `<td class="roll" style="background: ${val ? '#e8f5e9' : '#fff'}">${val}</td>`;
+              }
+              html += '</tr>';
+            }
+            
+            html += `</tbody></table>
+              <div style="font-size: 9px; color: #555; margin-top: 4px;">
+                <strong>Rolls:</strong> ${rolls.join(', ') || 'None'}
+              </div>
+            </div>`;
+          });
+          
+          html += `</div>`;
+        });
+      });
+    });
+    
+    html += `</div>`;
+  });
+  
+  html += `</body></html>`;
+  return html;
+}
+
+function printSeatingPlansByDate() {
+  let html = generateSeatingPlanHTML('date');
+  let printWindow = window.open('', '_blank');
+  printWindow.document.write(html);
+  printWindow.document.close();
+  setTimeout(() => printWindow.print(), 500);
+  showToast("Print dialog opened (organized by date) 🖨️");
+}
+
+function printSeatingPlansByShift() {
+  let html = generateSeatingPlanHTML('shift');
+  let printWindow = window.open('', '_blank');
+  printWindow.document.write(html);
+  printWindow.document.close();
+  setTimeout(() => printWindow.print(), 500);
+  showToast("Print dialog opened (organized by shift) 🖨️");
+}
+
+function printSeatingPlansAll() {
+  let html = generateSeatingPlanHTML('all');
+  let printWindow = window.open('', '_blank');
+  printWindow.document.write(html);
+  printWindow.document.close();
+  setTimeout(() => printWindow.print(), 500);
+  showToast("Print dialog opened (all sessions) 🖨️");
+}
+
+// ════════════════════════════════════════════════
+function handleRollExcelImport(inp) {
+  let f = inp.files[0]; if(!f) return;
+  let fr = new FileReader();
+  fr.onload = e => {
+    try {
+      let wb = XLSX.read(e.target.result, {type:"binary"});
+      let imported = 0;
+      wb.SheetNames.forEach(sheetName => {
+        let ws = wb.Sheets[sheetName];
+        let data = XLSX.utils.sheet_to_json(ws, {header:1});
+        let sub = sheetName;
+        let morningRolls = [];
+        let eveningRolls = [];
+        data.forEach((row, ri) => {
+          if(ri===0 && String(row[0]).toLowerCase().includes("subject")) return;
+          if(row[0] && String(row[0]).trim()) {
+            let s = String(row[0]).trim();
+            let shift = row[1] ? String(row[1]).trim().toUpperCase()[0] : "M";
+            let roll = row[2] || row[1];
+            if(/^\d+$/.test(String(roll).trim())) {
+              if(shift==="E") eveningRolls.push(String(roll).trim());
+              else morningRolls.push(String(roll).trim());
+            }
+          }
+        });
+        if(morningRolls.length || eveningRolls.length) {
+          appData.rollMaster[sub] = { morning: morningRolls, evening: eveningRolls };
+          imported++;
+        }
+      });
+      if(imported) {
+        saveToLocal();
+        renderRollMaster();
+        renderSubjectSelector();
+        refreshDashboard();
+        showToast(`Imported ${imported} subject(s) from Excel ✅`);
+      } else {
+        showToast("No valid data found in Excel");
+      }
+    } catch(err) {
+      showToast(`Error importing: ${err.message} ❌`);
+    }
+  };
+  fr.readAsBinaryString(f);
+}
+
+// ════════════════════════════════════════════════
+// TA-DA (Simplified - keeping core structure)
+// ════════════════════════════════════════════════
+const DA_RATES = {
+  1:660, 2:660, 3:660, 4:660, 5:800, 6:800, 7:800, 8:800,
+  9:1000, 10:1000, 11:1100, 12:1200, 13:1350, 14:1500,
+  15:1680, 16:1800, 17:2000, 18:2200, 19:2500, 20:2800,
+  21:3200, 22:3600
+};
+
+function updateDARate() {
+  let bps = parseInt(document.getElementById("tdBPS").value) || 15;
+  let rate = DA_RATES[bps] || 1680;
+  document.getElementById("tdDARate").value = rate;
+  let guide = Object.entries(DA_RATES).map(([g,r])=>`BPS-${g}: Rs.${r}`).join(" | ");
+  document.getElementById("daRateGuide").innerHTML = `<strong>Current: BPS-${bps} = Rs.${rate}/day</strong><br><small>${guide}</small>`;
+  calcTA();
+}
+
+function recalcDays() {
+  let s = document.getElementById("tdStartDate").value;
+  let e = document.getElementById("tdEndDate").value;
+  let off = parseInt(document.getElementById("tdOffDays").value)||0;
+  if(!s || !e) return;
+  let start = new Date(s), end = new Date(e);
+  let weekdays = 0;
+  let cur = new Date(start);
+  while(cur <= end) {
+    let d = cur.getDay();
+    if(d !== 0 && d !== 6) weekdays++;
+    cur.setDate(cur.getDate()+1);
+  }
+  let gazetteRaw = document.getElementById("tdGazetteDates").value;
+  let gazDates = gazetteRaw.split(/[,\n]+/).map(d=>d.trim()).filter(Boolean);
+  weekdays += gazDates.length;
+  let days = Math.max(0, weekdays - off);
+  document.getElementById("tdWorkDays").value = days;
+  calcTA();
+}
+
+function calcTA() {
+  let days = parseInt(document.getElementById("tdWorkDays").value)||0;
+  let daRate = parseInt(document.getElementById("tdDARate").value)||1680;
+  let totalDA = days * daRate;
+  document.getElementById("tdTotalDA").value = totalDA;
+  let distH2T = parseInt(document.getElementById("tdDistHome2Train").value)||0;
+  let distH2E = parseInt(document.getElementById("tdDistHome2Exam").value)||0;
+  let taRate = parseInt(document.getElementById("tdTARate").value)||10;
+  let taHome2Train = distH2T * taRate * 2;
+  let trainingDAamt = distH2T > 0 ? daRate : 0;
+  let taExamGo = distH2E * taRate;
+  let taExamReturn = distH2E * taRate;
+  let halfDA = Math.round(daRate / 2);
+  let taHome2Exam = taExamGo + taExamReturn + (halfDA * 2);
+  let grandTotal = totalDA + taHome2Train + trainingDAamt + taHome2Exam;
+  document.getElementById("tadaCalcPreview").innerHTML = `
+    <strong>💰 Summary</strong><br>
+    DA: ${days} days × Rs.${daRate.toLocaleString()} = <strong>Rs.${totalDA.toLocaleString()}</strong><br>
+    ${distH2T > 0 ? `Training: ${distH2T}km×2×Rs.${taRate} + DA = Rs.${(taHome2Train+trainingDAamt).toLocaleString()}<br>` : ""}
+    ${distH2E > 0 ? `Exam Center: ${distH2E}km×2×Rs.${taRate} + ½DA×2 = Rs.${taHome2Exam.toLocaleString()}<br>` : ""}
+    <span style="font-size:1rem;font-weight:700;color:var(--success)">Grand Total: Rs.${grandTotal.toLocaleString()}</span>`;
+}
+
+function loadTADAForm() {
+  let t = appData.tada;
+  let fields = {
+    tdName:t.name, tdQual:t.qual, tdDesig:t.desig, tdBPS:t.bps,
+    tdBasicPay:t.basicPay, tdCNIC:t.cnic, tdHomeStation:t.homeStation,
+    tdPurpose:t.purpose, tdTrainingCenter:t.trainingCenter,
+    tdExamCenter:t.examCenter, tdExamCode:t.examCode,
+    tdStartDate:t.startDate, tdEndDate:t.endDate, tdOffDays:t.offDays,
+    tdDistHome2Train:t.distHome2Train, tdDistHome2Exam:t.distHome2Exam,
+    tdTARate:t.taRate||10, tdDARate:t.daRate||1680,
+    tdTrainingDate:t.trainingDate, tdGazetteDates:t.gazetteDates||""
+  };
+  Object.entries(fields).forEach(([id,val]) => {
+    let el = document.getElementById(id);
+    if(el && val !== undefined && val !== null && val !== "") el.value = val;
+  });
+  let roleEl = document.getElementById("tdRole");
+  if(roleEl && t.role) roleEl.value = t.role;
+  updateDARate();
+  recalcDays();
+  if(!t.examCenter && appData.config.name) {
+    document.getElementById("tdExamCenter").value = appData.config.name;
+    document.getElementById("tdExamCode").value   = appData.config.code;
+  }
+}
+
+function saveTADAData() {
+  appData.tada = {
+    name:    document.getElementById("tdName").value,
+    qual:    document.getElementById("tdQual").value,
+    desig:   document.getElementById("tdDesig").value,
+    bps:     parseInt(document.getElementById("tdBPS").value)||15,
+    basicPay:parseInt(document.getElementById("tdBasicPay").value)||0,
+    cnic:    document.getElementById("tdCNIC").value,
+    homeStation:    document.getElementById("tdHomeStation").value,
+    purpose:        document.getElementById("tdPurpose").value,
+    trainingCenter: document.getElementById("tdTrainingCenter").value,
+    examCenter:     document.getElementById("tdExamCenter").value,
+    examCode:       document.getElementById("tdExamCode").value,
+    startDate: document.getElementById("tdStartDate").value,
+    endDate:   document.getElementById("tdEndDate").value,
+    offDays:   parseInt(document.getElementById("tdOffDays").value)||0,
+    distHome2Train: parseInt(document.getElementById("tdDistHome2Train").value)||0,
+    distHome2Exam:  parseInt(document.getElementById("tdDistHome2Exam").value)||0,
+    taRate:    parseInt(document.getElementById("tdTARate").value)||10,
+    daRate:    parseInt(document.getElementById("tdDARate").value)||1680,
+    trainingDate:  document.getElementById("tdTrainingDate").value,
+    role:          document.getElementById("tdRole").value,
+    gazetteDates:  document.getElementById("tdGazetteDates").value
+  };
+  saveToLocal();
+  showToast("TA-DA data saved ✅");
+}
+
+function renderTADABill() {
+  saveTADAData();
+  let t = appData.tada;
+  let cfg = appData.config;
+  let days = parseInt(document.getElementById("tdWorkDays").value)||0;
+  let daRate = parseInt(document.getElementById("tdDARate").value)||1680;
+  let grandTotal = parseInt(document.getElementById("tdTotalDA").value)||0;
+  
+  let output = document.getElementById("tadaBillOutput");
+  output.innerHTML = `
+    <div style="border:2px solid #000;padding:16px;background:white;font-family:'Times New Roman',serif;font-size:9pt;margin-top:16px">
+      <div style="text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:12px">
+        <div style="font-size:8pt">بورڈ آف انٹرمیڈیٹ اینڈ سیکنڈری ایجوکیشن، ساہیوال</div>
+        <div style="font-weight:bold">BOARD OF INTERMEDIATE &amp; SECONDARY EDUCATION, SAHIWAL</div>
+        <div style="font-size:8pt;margin-top:4px"><strong>TA-DA BILL</strong></div>
+        <div style="font-size:8pt">Center: <strong>${cfg.name}</strong> (Code: ${cfg.code})</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:8.5pt;margin-bottom:12px">
+        <div><div><strong>Name:</strong> ${t.name||"—"}</div><div><strong>Designation:</strong> ${t.desig||"—"}</div><div><strong>BPS:</strong> ${t.bps||"—"}</div></div>
+        <div><div><strong>CNIC:</strong> ${t.cnic||"—"}</div><div><strong>Home Station:</strong> ${t.homeStation||"—"}</div><div><strong>Role:</strong> ${t.role||"—"}</div></div>
+      </div>
+      <div style="margin-bottom:12px;font-size:8.5pt">
+        <div><strong>Exam Center:</strong> ${t.examCenter||cfg.name} (Code: ${t.examCode||cfg.code})</div>
+        <div><strong>Duty Period:</strong> ${t.startDate} to ${t.endDate}</div>
+        <div><strong>Working Days:</strong> ${days} days @ Rs.${daRate}/day = Rs.<strong>${document.getElementById("tdTotalDA").value}</strong></div>
+      </div>
+      <div style="text-align:center;margin-top:20px;padding-top:12px;border-top:1px solid #000;font-size:8pt">
+        <div style="margin-top:16px">Prepared by: ________________</div>
+        <div style="margin-top:24px">Superintendent Signature: ________________</div>
+      </div>
+      <div class="no-print" style="text-align:center;margin-top:12px">
+        <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print TA-DA Bill</button>
+      </div>
+    </div>`;
+  showToast("TA-DA Bill generated ✅");
+}
+
+// ════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════
+document.getElementById("rollNumbersInput").addEventListener("input", updateRollInputPreview);
+refreshDashboard();
+renderRollMaster();
+renderHallList();
+renderSubjectSelector();
+populateAttSessionSelect();
+refreshAttendanceTable();
+renderSF13Report();
+</script>
+</body>
+</html>
