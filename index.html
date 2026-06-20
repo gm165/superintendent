@@ -64,31 +64,18 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
 .seat-cell{border:1px solid #aaa;padding:3px 2px;text-align:center;background:#fff}
 .seat-cell input{width:100%;border:none;text-align:center;font-family:monospace;font-size:0.75rem;padding:5px 0;background:transparent}
 .seat-cell.filled{background:#dcfce7}
-.subject-tag{display:inline-flex;align-items:center;gap:5px;background:var(--primary-bg);padding:4px 12px;border-radius:40px;margin:3px;font-size:0.8rem}
-.subject-tag button{background:none;border:none;cursor:pointer;color:var(--danger);font-weight:bold;padding:0 2px}
 .roll-subject-card{border:1.5px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden}
 .roll-subject-header{background:var(--primary-bg);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;cursor:pointer}
 .roll-subject-header h4{font-size:0.88rem;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:8px}
 .roll-count-badge{background:var(--primary);color:white;padding:2px 10px;border-radius:40px;font-size:0.7rem;font-weight:600}
-.roll-pills-wrap{padding:10px 14px;display:flex;flex-wrap:wrap;gap:5px;max-height:200px;overflow-y:auto}
-.roll-pill{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:3px 9px;font-family:monospace;font-size:0.75rem;cursor:pointer;transition:background 0.15s}
+.roll-pills-wrap{padding:8px 10px;display:flex;flex-wrap:wrap;gap:4px;max-height:120px;overflow-y:auto}
+.roll-pill{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:2px 8px;font-family:monospace;font-size:0.7rem;cursor:pointer;transition:background 0.15s}
 .roll-pill:hover{background:var(--danger-bg);border-color:var(--danger);color:var(--danger)}
-.roll-pill.selected-for-seating{background:#dcfce7;border-color:#15803d;color:#14532d;font-weight:700}
-.auto-assign-panel{background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:12px 14px;margin-top:10px;font-size:0.8rem}
-.combined-hall-table{width:100%;border-collapse:collapse;font-size:0.71rem;table-layout:fixed}
-.combined-hall-table th{border:1.5px solid #334155;padding:5px 3px;text-align:center;background:#1e3a5f;color:white;font-size:0.67rem}
-.combined-hall-table th.subj-header{font-size:0.64rem;padding:3px 2px}
-.chcell{border:1px solid #94a3b8;padding:4px 3px;text-align:center;font-family:monospace;font-size:0.7rem;min-width:54px}
-.chcell.s0{background:#dbeafe;color:#1e3a8a;font-weight:700}
-.chcell.s1{background:#dcfce7;color:#14532d;font-weight:700}
-.chcell.s2{background:#fef9c3;color:#713f12;font-weight:700}
-.chcell.s3{background:#fce7f3;color:#831843;font-weight:700}
-.chcell.s4{background:#ede9fe;color:#4c1d95;font-weight:700}
-.chcell.s5{background:#ffedd5;color:#7c2d12;font-weight:700}
-.chcell.empty{background:#f8fafc;color:#cbd5e1}
-.row-num-cell{background:#f1f5f9;color:#64748b;font-size:0.63rem;font-weight:600;border:1px solid #cbd5e1;text-align:center;padding:3px;width:26px}
-.swatch{width:13px;height:13px;border-radius:3px;display:inline-block;vertical-align:middle;margin-right:3px}
-.td-date-vertical{writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);white-space:nowrap;font-weight:700;text-align:center;padding:8px 4px;background:#eef2ff;font-size:0.7rem;vertical-align:middle}
+.shift-section{border:1px solid #e2e8f0;border-radius:8px;padding:8px;margin-bottom:8px}
+.shift-section .shift-title{font-size:0.7rem;font-weight:700;margin-bottom:4px}
+.shift-section .shift-title.morning{color:#1e40af}
+.shift-section .shift-title.evening{color:#92400e}
+.shift-edit-btn{float:right;font-size:0.6rem;padding:2px 8px}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--primary);color:white;padding:8px 22px;border-radius:40px;z-index:9999;opacity:0;transition:opacity 0.2s;pointer-events:none;font-size:0.85rem}
 .toast.show{opacity:1}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:1000;padding:1rem}
@@ -103,51 +90,20 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
 .shift-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.65rem;font-weight:700;margin-left:4px}
 .shift-badge.morning{background:#dbeafe;color:#1e40af}
 .shift-badge.evening{background:#ffedd5;color:#92400e}
-.tada-wrap{background:white;border:2px solid #000;font-family:'Times New Roman',serif;font-size:8pt;color:#000;width:100%;max-width:1050px;margin:0 auto}
-.tada-wrap table{border-collapse:collapse;width:100%}
-.tada-wrap td,.tada-wrap th{border:1px solid #555;padding:3px 5px;vertical-align:top;font-size:7.5pt}
-.tada-wrap td.nb{border:none}
-.tada-wrap td.bb{border-bottom:1px solid #999}
-.tada-wrap td.bl{border-left:1px solid #999}
-.tada-wrap td.bt{border-top:1px solid #999}
-.tada-wrap td.br{border-right:1px solid #999}
-.tada-bold{font-weight:700}
-.tada-center{text-align:center}
-.tada-urdu{font-family:'Jameel Noori Nastaliq','Segoe UI',sans-serif}
+.td-date-vertical{writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);white-space:nowrap;font-weight:700;text-align:center;padding:8px 4px;background:#eef2ff;font-size:0.7rem;vertical-align:middle}
 .print-target{display:block!important}
 @media print {
   .no-print{display:none!important}
   .print-target{display:block!important}
   .section{display:none!important}
   .print-target{display:block!important}
-  #sf13Section .card-body > div {
-    border: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  #sf13Section .card-body {
-    padding: 0 !important;
-  }
-  #sf13Section .card {
-    border: none !important;
-    box-shadow: none !important;
-    margin: 0 !important;
-  }
-  #sf13Section .card-header {
-    display: none !important;
-  }
-  .sf13-heading {
-    display: block !important;
-    page-break-after: avoid;
-  }
-  .sf13-heading h3, .sf13-heading h4, .sf13-heading p {
-    margin: 2px 0;
-  }
-  .sf13-heading {
-    border-bottom: 2px solid #000;
-    padding-bottom: 8px;
-    margin-bottom: 12px;
-  }
+  #sf13Section .card-body > div{border:none!important;padding:0!important;margin:0!important}
+  #sf13Section .card-body{padding:0!important}
+  #sf13Section .card{border:none!important;box-shadow:none!important;margin:0!important}
+  #sf13Section .card-header{display:none!important}
+  .sf13-heading{display:block!important;page-break-after:avoid}
+  .sf13-heading h3,.sf13-heading h4,.sf13-heading p{margin:2px 0}
+  .sf13-heading{border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:12px}
 }
 </style>
 </head>
@@ -501,9 +457,6 @@ function loadLocal() {
 }
 loadLocal(); saveToLocal();
 
-// ════════════════════════════════════════════════
-// UTILITIES
-// ════════════════════════════════════════════════
 function showToast(msg) {
   let t = document.getElementById("toastMsg");
   t.innerText = msg; t.classList.add("show");
@@ -603,7 +556,7 @@ function saveCenterConfig(){
 }
 
 // ════════════════════════════════════════════════
-// ROLL MASTER (FIXED)
+// ROLL MASTER (FIXED - with proper display and edit per shift)
 // ════════════════════════════════════════════════
 function renderRollMaster() {
   let sel = document.getElementById("rollSubjectSelect");
@@ -617,18 +570,22 @@ function renderRollMaster() {
     wrap.innerHTML = `<div class="alert alert-info">No subjects added yet. Click "+ Add Subject" to start.</div>`;
     return;
   }
+  
   wrap.innerHTML = subjects.map(sub => {
     let data = appData.rollMaster[sub] || {morning:{I:[],II:[]}, evening:{I:[],II:[]}};
+    // Ensure structure
     ['morning','evening'].forEach(shift => {
       if(!data[shift]) data[shift] = {I:[],II:[]};
       if(!data[shift].I) data[shift].I = [];
       if(!data[shift].II) data[shift].II = [];
     });
+    
     let morningI = data.morning.I || [];
     let morningII = data.morning.II || [];
     let eveningI = data.evening.I || [];
     let eveningII = data.evening.II || [];
     let total = morningI.length + morningII.length + eveningI.length + eveningII.length;
+    
     return `
     <div class="roll-subject-card">
       <div class="roll-subject-header">
@@ -637,45 +594,53 @@ function renderRollMaster() {
           <span class="roll-count-badge">M:${morningI.length+morningII.length} | E:${eveningI.length+eveningII.length} | Total:${total}</span>
         </h4>
         <div style="display:flex;gap:6px;flex-wrap:wrap" onclick="event.stopPropagation()">
-          <button class="btn btn-outline btn-sm" onclick="editSubjectRolls('${sub.replace(/'/g,"\\'")}')">✏️ Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteSubjectRolls('${sub.replace(/'/g,"\\'")}')">🗑 Delete</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSubjectRolls('${sub.replace(/'/g,"\\'")}')">🗑 Delete Subject</button>
         </div>
       </div>
       <div style="padding:10px 14px">
-        <div style="margin-bottom:8px">
-          <div style="font-size:0.75rem;font-weight:700;color:#1e40af;margin-bottom:4px">🌅 Morning</div>
+        <!-- Morning Section -->
+        <div class="shift-section" style="border-color:#93c5fd;background:#eff6ff">
+          <div class="shift-title morning">
+            🌅 Morning
+            <button class="btn btn-outline btn-sm shift-edit-btn" onclick="editShiftRolls('${sub.replace(/'/g,"\\'")}','M')">✏️ Edit</button>
+          </div>
           <div style="display:flex;flex-wrap:wrap;gap:8px">
-            <div style="flex:1;min-width:120px">
-              <div style="font-size:0.65rem;color:#1e40af;font-weight:600">Paper I</div>
-              <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#dbeafe;border-radius:8px;max-height:80px;overflow-y:auto">
-                ${morningI.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','M','I')" style="background:#fff;border-color:#1e40af">${r}</span>`).join("")}
-                ${morningI.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls</span>`:""}
+            <div style="flex:1;min-width:100px">
+              <div style="font-size:0.6rem;color:#1e40af;font-weight:600">Paper I</div>
+              <div class="roll-pills-wrap" style="background:#dbeafe;border-radius:6px;min-height:30px">
+                ${morningI.map(r=>`<span class="roll-pill" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','M','I')">${r}</span>`).join("")}
+                ${morningI.length===0?`<span style="color:var(--text-muted);font-size:0.7rem;padding:4px">—</span>`:""}
               </div>
             </div>
-            <div style="flex:1;min-width:120px">
-              <div style="font-size:0.65rem;color:#1e40af;font-weight:600">Paper II</div>
-              <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#dbeafe;border-radius:8px;max-height:80px;overflow-y:auto">
-                ${morningII.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','M','II')" style="background:#fff;border-color:#1e40af">${r}</span>`).join("")}
-                ${morningII.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls</span>`:""}
+            <div style="flex:1;min-width:100px">
+              <div style="font-size:0.6rem;color:#1e40af;font-weight:600">Paper II</div>
+              <div class="roll-pills-wrap" style="background:#dbeafe;border-radius:6px;min-height:30px">
+                ${morningII.map(r=>`<span class="roll-pill" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','M','II')">${r}</span>`).join("")}
+                ${morningII.length===0?`<span style="color:var(--text-muted);font-size:0.7rem;padding:4px">—</span>`:""}
               </div>
             </div>
           </div>
         </div>
-        <div>
-          <div style="font-size:0.75rem;font-weight:700;color:#92400e;margin-bottom:4px">🌙 Evening</div>
+        
+        <!-- Evening Section -->
+        <div class="shift-section" style="border-color:#fdba74;background:#fff7ed">
+          <div class="shift-title evening">
+            🌙 Evening
+            <button class="btn btn-outline btn-sm shift-edit-btn" onclick="editShiftRolls('${sub.replace(/'/g,"\\'")}','E')">✏️ Edit</button>
+          </div>
           <div style="display:flex;flex-wrap:wrap;gap:8px">
-            <div style="flex:1;min-width:120px">
-              <div style="font-size:0.65rem;color:#92400e;font-weight:600">Paper I</div>
-              <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#ffedd5;border-radius:8px;max-height:80px;overflow-y:auto">
-                ${eveningI.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','E','I')" style="background:#fff;border-color:#92400e">${r}</span>`).join("")}
-                ${eveningI.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls</span>`:""}
+            <div style="flex:1;min-width:100px">
+              <div style="font-size:0.6rem;color:#92400e;font-weight:600">Paper I</div>
+              <div class="roll-pills-wrap" style="background:#ffedd5;border-radius:6px;min-height:30px">
+                ${eveningI.map(r=>`<span class="roll-pill" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','E','I')">${r}</span>`).join("")}
+                ${eveningI.length===0?`<span style="color:var(--text-muted);font-size:0.7rem;padding:4px">—</span>`:""}
               </div>
             </div>
-            <div style="flex:1;min-width:120px">
-              <div style="font-size:0.65rem;color:#92400e;font-weight:600">Paper II</div>
-              <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#ffedd5;border-radius:8px;max-height:80px;overflow-y:auto">
-                ${eveningII.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','E','II')" style="background:#fff;border-color:#92400e">${r}</span>`).join("")}
-                ${eveningII.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls</span>`:""}
+            <div style="flex:1;min-width:100px">
+              <div style="font-size:0.6rem;color:#92400e;font-weight:600">Paper II</div>
+              <div class="roll-pills-wrap" style="background:#ffedd5;border-radius:6px;min-height:30px">
+                ${eveningII.map(r=>`<span class="roll-pill" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','E','II')">${r}</span>`).join("")}
+                ${eveningII.length===0?`<span style="color:var(--text-muted);font-size:0.7rem;padding:4px">—</span>`:""}
               </div>
             </div>
           </div>
@@ -696,15 +661,18 @@ function openAddSubjectRolls() {
   document.getElementById("rollSubjectName").focus();
 }
 
-function editSubjectRolls(sub) {
-  document.getElementById("addSubjectPanelTitle").textContent = `✏️ Edit: ${sub}`;
+function editShiftRolls(sub, shift) {
+  document.getElementById("addSubjectPanelTitle").textContent = `✏️ Edit ${shift==='M'?'Morning':'Evening'} - ${sub}`;
   document.getElementById("rollSubjectName").value = sub;
+  document.getElementById("rollShift").value = shift;
+  
   let sel = document.getElementById("rollSubjectSelect");
   for(let o of sel.options){ if(o.value===sub){o.selected=true;break;} }
+  
   let data = appData.rollMaster[sub] || {morning:{I:[],II:[]}, evening:{I:[],II:[]}};
-  let shift = document.getElementById("rollShift").value;
+  let shiftKey = shift.toLowerCase();
   let paper = document.getElementById("rollPaper").value;
-  let rolls = (data[shift.toLowerCase()]?.[paper]||[]);
+  let rolls = (data[shiftKey]?.[paper]||[]);
   document.getElementById("rollNumbersInput").value = rolls.join(", ");
   updateRollInputPreview();
   document.getElementById("addSubjectPanel").style.display = "block";
@@ -761,7 +729,7 @@ function saveSubjectRolls() {
 function deleteSubjectRolls(sub) {
   if(!confirm(`Delete all roll numbers for "${sub}"?`)) return;
   delete appData.rollMaster[sub];
-  saveToLocal(); renderRollMaster(); refreshDashboard();
+  saveToLocal(); renderRollMaster(); renderSubjectSelector(); refreshDashboard();
   showToast(`Deleted: ${sub}`);
 }
 
@@ -770,7 +738,8 @@ function removeSingleRoll(sub, roll, shift, paper) {
   let s = shift.toLowerCase();
   if(appData.rollMaster[sub][s] && appData.rollMaster[sub][s][paper]) {
     appData.rollMaster[sub][s][paper] = appData.rollMaster[sub][s][paper].filter(r=>r!==roll);
-    saveToLocal(); renderRollMaster(); refreshDashboard();
+    saveToLocal(); renderRollMaster(); renderSubjectSelector(); refreshDashboard();
+    showToast(`Removed roll ${roll}`);
   }
 }
 
