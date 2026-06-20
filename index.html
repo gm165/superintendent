@@ -66,8 +66,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
 .seat-cell.filled{background:#dcfce7}
 .subject-tag{display:inline-flex;align-items:center;gap:5px;background:var(--primary-bg);padding:4px 12px;border-radius:40px;margin:3px;font-size:0.8rem}
 .subject-tag button{background:none;border:none;cursor:pointer;color:var(--danger);font-weight:bold;padding:0 2px}
-
-/* ── Roll Master styles ── */
 .roll-subject-card{border:1.5px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden}
 .roll-subject-header{background:var(--primary-bg);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;cursor:pointer}
 .roll-subject-header h4{font-size:0.88rem;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:8px}
@@ -76,11 +74,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
 .roll-pill{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:3px 9px;font-family:monospace;font-size:0.75rem;cursor:pointer;transition:background 0.15s}
 .roll-pill:hover{background:var(--danger-bg);border-color:var(--danger);color:var(--danger)}
 .roll-pill.selected-for-seating{background:#dcfce7;border-color:#15803d;color:#14532d;font-weight:700}
-
-/* Auto-assign panel */
 .auto-assign-panel{background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:12px 14px;margin-top:10px;font-size:0.8rem}
-
-/* Combined Hall View */
 .combined-hall-table{width:100%;border-collapse:collapse;font-size:0.71rem;table-layout:fixed}
 .combined-hall-table th{border:1.5px solid #334155;padding:5px 3px;text-align:center;background:#1e3a5f;color:white;font-size:0.67rem}
 .combined-hall-table th.subj-header{font-size:0.64rem;padding:3px 2px}
@@ -109,7 +103,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
 .shift-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.65rem;font-weight:700;margin-left:4px}
 .shift-badge.morning{background:#dbeafe;color:#1e40af}
 .shift-badge.evening{background:#ffedd5;color:#92400e}
-/* ── TA-DA Bill — Exact Excel Format ── */
 .tada-wrap{background:white;border:2px solid #000;font-family:'Times New Roman',serif;font-size:8pt;color:#000;width:100%;max-width:1050px;margin:0 auto}
 .tada-wrap table{border-collapse:collapse;width:100%}
 .tada-wrap td,.tada-wrap th{border:1px solid #555;padding:3px 5px;vertical-align:top;font-size:7.5pt}
@@ -122,15 +115,11 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
 .tada-center{text-align:center}
 .tada-urdu{font-family:'Jameel Noori Nastaliq','Segoe UI',sans-serif}
 .print-target{display:block!important}
-
-/* SF-13 print area: repeat header on every page */
 @media print {
   .no-print{display:none!important}
   .print-target{display:block!important}
   .section{display:none!important}
   .print-target{display:block!important}
-  
-  /* SF-13 specific: the whole report card is the print area */
   #sf13Section .card-body > div {
     border: none !important;
     padding: 0 !important;
@@ -147,7 +136,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
   #sf13Section .card-header {
     display: none !important;
   }
-  /* repeat heading on each page */
   .sf13-heading {
     display: block !important;
     page-break-after: avoid;
@@ -198,7 +186,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
 
 <div class="container">
 
-<!-- ════════════════════════════════════════════════ DASHBOARD ════════════════════════════════════════════════ -->
+<!-- DASHBOARD -->
 <div id="dashboardSection" class="section active">
   <div class="card">
     <div class="card-header"><h3>📈 Dashboard</h3></div>
@@ -220,7 +208,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════ ROLL MASTER ════════════════════════════════════════════════ -->
+<!-- ROLL MASTER -->
 <div id="rollmasterSection" class="section">
   <div class="card">
     <div class="card-header">
@@ -283,7 +271,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════ SEATING PLAN ════════════════════════════════════════════════ -->
+<!-- SEATING PLAN -->
 <div id="seatplanSection" class="section">
   <div class="card">
     <div class="card-header"><h3>🎓 Seating Plan Setup</h3></div>
@@ -327,7 +315,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════ ATTENDANCE ════════════════════════════════════════════════ -->
+<!-- ATTENDANCE -->
 <div id="attendanceSection" class="section">
   <div class="card">
     <div class="card-header"><h3>📝 Mark Attendance</h3></div>
@@ -361,7 +349,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════ SF-13 REPORT ════════════════════════════════════════════════ -->
+<!-- SF-13 REPORT -->
 <div id="sf13Section" class="section">
   <div class="card">
     <div class="card-header">
@@ -375,7 +363,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════ TA-DA BILL ════════════════════════════════════════════════ -->
+<!-- TA-DA BILL -->
 <div id="tadaSection" class="section">
   <div class="card">
     <div class="card-header"><h3>💰 TA-DA Bill Generator</h3></div>
@@ -417,13 +405,11 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
         <div class="form-group"><label>Total DA Amount (Rs.)</label><input type="number" id="tdTotalDA" readonly style="background:#f1f5f9"></div>
       </div>
       <div id="daRateGuide" style="font-size:0.73rem;color:var(--text-muted);margin-top:4px"></div>
-
       <div style="border:1.5px solid var(--border);border-radius:12px;padding:12px;margin:16px 0">
         <h4 style="font-size:0.85rem;color:var(--primary);margin-bottom:8px">📅 Sundays Stayed at Center (Gazette Holidays)</h4>
         <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px">Enter Sundays/holidays when you stayed at exam center. Sat &amp; Sun are auto-excluded from date range.</p>
         <textarea id="tdGazetteDates" rows="2" placeholder="24-May-26, 31-May-26, 07-Jun-26" onchange="recalcDays()"></textarea>
       </div>
-
       <div id="tadaCalcPreview" class="alert alert-success" style="font-size:0.82rem"></div>
       <button class="btn btn-success btn-block" style="font-size:0.9rem" onclick="saveTADAData();renderTADABill()">💾 Save &amp; Generate Bill</button>
     </div>
@@ -433,7 +419,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
 
 </div><!-- /container -->
 
-<!-- ════════════════════════════════════════════════ MODALS ════════════════════════════════════════════════ -->
+<!-- MODALS -->
 <div id="setupModal" class="modal">
   <div class="modal-card">
     <div class="modal-header">
@@ -480,7 +466,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
 // ════════════════════════════════════════════════
 let appData = {
   config: { code:"30105", name:"Govt High School Sahiwal", exam:"Matric Annual 2026", sup:"Dr. Ahmed", dy:"Mr. Aslam", cso:"Mr. Rizwan" },
-  rollMaster: {}, // NOW: {subject: {morning: {I:[rolls], II:[rolls]}, evening: {I:[rolls], II:[rolls]}}}
+  rollMaster: {},
   sessions:   [],
   attendance: [],
   halls:      [],
@@ -496,6 +482,9 @@ let appData = {
 const DEFAULT_SUBJECTS = ["English", "Urdu", "Mathematics", "Physics", "Chemistry", "Biology", "Islamic Studies", "Pak Studies", "Economics", "Civics", "Geology"];
 let selectedSubjects = [];
 let hallsArray = [];
+let tempSubjectHalls = {};
+let _autoAssignSub = null;
+let _autoAssignSelected = [];
 
 function saveToLocal() { localStorage.setItem("sahiwal_supt_v74", JSON.stringify(appData)); }
 function loadLocal() {
@@ -614,7 +603,7 @@ function saveCenterConfig(){
 }
 
 // ════════════════════════════════════════════════
-// ROLL MASTER (with shift & paper)
+// ROLL MASTER (FIXED)
 // ════════════════════════════════════════════════
 function renderRollMaster() {
   let sel = document.getElementById("rollSubjectSelect");
@@ -630,7 +619,6 @@ function renderRollMaster() {
   }
   wrap.innerHTML = subjects.map(sub => {
     let data = appData.rollMaster[sub] || {morning:{I:[],II:[]}, evening:{I:[],II:[]}};
-    // ensure structure
     ['morning','evening'].forEach(shift => {
       if(!data[shift]) data[shift] = {I:[],II:[]};
       if(!data[shift].I) data[shift].I = [];
@@ -750,8 +738,15 @@ function saveSubjectRolls() {
   let rolls = [...new Set(raw.split(/[,\n\s]+/).map(p=>p.trim()).filter(Boolean))];
   if(!rolls.length){ showToast("Enter at least one roll number"); return; }
   
-  if(!appData.rollMaster[sub]) appData.rollMaster[sub] = {morning:{I:[],II:[]}, evening:{I:[],II:[]}};
-  if(!appData.rollMaster[sub][shift]) appData.rollMaster[sub][shift] = {I:[],II:[]};
+  // Initialize structure if needed
+  if(!appData.rollMaster[sub]) {
+    appData.rollMaster[sub] = {morning:{I:[],II:[]}, evening:{I:[],II:[]}};
+  }
+  if(!appData.rollMaster[sub][shift]) {
+    appData.rollMaster[sub][shift] = {I:[],II:[]};
+  }
+  
+  // Save the rolls for this specific shift and paper combination
   appData.rollMaster[sub][shift][paper] = rolls;
   
   if(!DEFAULT_SUBJECTS.includes(sub)) DEFAULT_SUBJECTS.push(sub);
@@ -775,8 +770,8 @@ function removeSingleRoll(sub, roll, shift, paper) {
   let s = shift.toLowerCase();
   if(appData.rollMaster[sub][s] && appData.rollMaster[sub][s][paper]) {
     appData.rollMaster[sub][s][paper] = appData.rollMaster[sub][s][paper].filter(r=>r!==roll);
+    saveToLocal(); renderRollMaster(); refreshDashboard();
   }
-  saveToLocal(); renderRollMaster(); refreshDashboard();
 }
 
 // ════════════════════════════════════════════════
@@ -837,10 +832,8 @@ function clearAllSeating() {
 }
 
 // ════════════════════════════════════════════════
-// SEATING GRID — with Shift & Paper Separation
+// SEATING GRID
 // ════════════════════════════════════════════════
-let tempSubjectHalls = {};
-
 function initiateMultiSubjectSeating() {
   if(!selectedSubjects.length){ showToast("Select at least 1 subject"); return; }
   if(!hallsArray.length)       { showToast("Add at least one hall first"); return; }
@@ -907,7 +900,6 @@ function initiateMultiSubjectSeating() {
   
   document.getElementById("multiSeatingOutput").innerHTML = out;
   
-  // Populate date selector
   let uniqueDates = [...new Set(appData.sessions.map(s => s.date))].sort();
   let dateSelect = document.getElementById("printDateSelect");
   if(dateSelect) {
@@ -995,22 +987,13 @@ function saveSubjectSession(sub,date,shift,building){
   if(!halls){ showToast("No data"); return; }
   let allRolls=halls.flatMap(h=>h.rollMatrix.flat()).filter(r=>r&&r.trim());
   if(!allRolls.length){ showToast(`No rolls entered for ${sub}`); return; }
-  // Determine paper from roll master (default I)
   let shiftKey = shift==="M" ? "morning" : "evening";
   let paper = "I";
-  // Check if any roll belongs to paper II
   let rollMasterData = appData.rollMaster[sub]?.[shiftKey]||{I:[],II:[]};
-  let paperIRolls = rollMasterData.I||[];
   let paperIIRolls = rollMasterData.II||[];
-  // If we have both, we can't determine, default I
-  // But we store paper in session for SF13
-  // For simplicity, we'll use paper from the first roll found in roll master
-  if(allRolls.length && paperIIRolls.length > 0) {
-    // Check if any of the placed rolls are from paper II
-    let placedSet = new Set(allRolls);
-    let hasPaperII = paperIIRolls.some(r => placedSet.has(r));
-    if(hasPaperII) paper = "II";
-  }
+  let placedSet = new Set(allRolls);
+  let hasPaperII = paperIIRolls.some(r => placedSet.has(r));
+  if(hasPaperII) paper = "II";
   let sess={id:Date.now()+Math.random(),date,sub,shift,paper,building,
     halls:halls.map(h=>({...h,rollMatrix:h.rollMatrix.map(col=>[...col])}))};
   appData.sessions=appData.sessions.filter(s=>!(s.date===date&&s.shift===shift&&s.sub===sub));
@@ -1020,11 +1003,8 @@ function saveSubjectSession(sub,date,shift,building){
 }
 
 // ════════════════════════════════════════════════
-// AUTO-ASSIGN FROM ROLL MASTER (with paper support)
+// AUTO-ASSIGN
 // ════════════════════════════════════════════════
-let _autoAssignSub = null;
-let _autoAssignSelected = [];
-
 function openAutoAssign(sub) {
   _autoAssignSub = sub;
   let shift = document.getElementById("seatShift").value;
@@ -1305,7 +1285,7 @@ function deleteAttendance(idx) {
 }
 
 // ════════════════════════════════════════════════
-// SF-13 REPORT (includes Paper column)
+// SF-13 REPORT
 // ════════════════════════════════════════════════
 function renderSF13Report(){
   let wrap=document.getElementById("sf13ReportContainer");
@@ -1411,6 +1391,9 @@ function importBackup(inp){
   fr.readAsText(f);
 }
 
+// ════════════════════════════════════════════════
+// PRINT SEATING PLANS
+// ════════════════════════════════════════════════
 function printSeatingPlansFiltered() {
   let selectedDate = document.getElementById("printDateSelect")?.value || "";
   let selectedShift = document.getElementById("printShiftSelect")?.value || "";
@@ -1423,12 +1406,10 @@ function printSeatingPlansFiltered() {
   let cfg = appData.config;
   let sessions = appData.sessions;
   
-  // Filter by date if selected
   if(selectedDate) {
     sessions = sessions.filter(s => s.date === selectedDate);
   }
   
-  // Filter by shift if selected
   if(selectedShift) {
     sessions = sessions.filter(s => s.shift === selectedShift);
   }
@@ -1523,7 +1504,6 @@ function printSeatingPlansFiltered() {
 }
 
 function generateSeatingPlanHTML(filterType) {
-  // filterType: 'date', 'shift', or 'all'
   if(!appData.sessions.length) {
     showToast("No seating sessions saved yet");
     return;
@@ -1669,6 +1649,8 @@ function printSeatingPlansAll() {
 }
 
 // ════════════════════════════════════════════════
+// EXCEL IMPORT
+// ════════════════════════════════════════════════
 function handleRollExcelImport(inp) {
   let f = inp.files[0]; if(!f) return;
   let fr = new FileReader();
@@ -1684,7 +1666,6 @@ function handleRollExcelImport(inp) {
         data.forEach((row, ri) => {
           if(ri===0 && String(row[0]).toLowerCase().includes("subject")) return;
           if(row[0] && String(row[0]).trim()) {
-            let s = String(row[0]).trim();
             let shift = row[1] ? String(row[1]).trim().toUpperCase()[0] : "M";
             let paper = row[2] ? String(row[2]).trim().toUpperCase() : "I";
             let roll = row[3] || row[1];
@@ -1722,7 +1703,7 @@ function handleRollExcelImport(inp) {
 }
 
 // ════════════════════════════════════════════════
-// TA-DA (Simplified - keeping core structure)
+// TA-DA
 // ════════════════════════════════════════════════
 const DA_RATES = {
   1:660, 2:660, 3:660, 4:660, 5:800, 6:800, 7:800, 8:800,
@@ -1844,7 +1825,6 @@ function renderTADABill() {
   let cfg = appData.config;
   let days = parseInt(document.getElementById("tdWorkDays").value)||0;
   let daRate = parseInt(document.getElementById("tdDARate").value)||1680;
-  let grandTotal = parseInt(document.getElementById("tdTotalDA").value)||0;
   
   let output = document.getElementById("tadaBillOutput");
   output.innerHTML = `
