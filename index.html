@@ -224,11 +224,11 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
 <div id="rollmasterSection" class="section">
   <div class="card">
     <div class="card-header">
-      <h3>📘 Roll Master (with Shift)</h3>
+      <h3>📘 Roll Master (with Shift & Paper)</h3>
       <button class="btn btn-success btn-sm" onclick="openAddSubjectRolls()">➕ Add Subject</button>
     </div>
     <div class="card-body">
-      <div style="margin-bottom:16px;font-size:0.8rem;color:var(--text-muted)">Manage roll numbers for each subject with Morning/Evening shift designation.</div>
+      <div style="margin-bottom:16px;font-size:0.8rem;color:var(--text-muted)">Manage roll numbers for each subject with Morning/Evening shift and Paper (I/II) designation.</div>
       <div id="addSubjectPanel" style="display:none;border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px">
         <h4 id="addSubjectPanelTitle">➕ Add Subject Roll Numbers</h4>
         <div style="margin-top:12px">
@@ -249,6 +249,19 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
             <div class="form-group">
               <label>Subject Name (manual)</label>
               <input id="rollSubjectName" type="text" placeholder="English, Urdu, Math, etc.">
+            </div>
+          </div>
+          <div class="row-3">
+            <div class="form-group">
+              <label>Paper</label>
+              <select id="rollPaper">
+                <option value="I">Paper I</option>
+                <option value="II">Paper II</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>&nbsp;</label>
+              <div style="padding-top:6px;font-size:0.75rem;color:var(--text-muted)">Paper will appear in SF-13 report</div>
             </div>
           </div>
           <div class="form-group">
@@ -467,7 +480,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
 // ════════════════════════════════════════════════
 let appData = {
   config: { code:"30105", name:"Govt High School Sahiwal", exam:"Matric Annual 2026", sup:"Dr. Ahmed", dy:"Mr. Aslam", cso:"Mr. Rizwan" },
-  rollMaster: {}, // NOW: {subject: {morning: [rolls], evening: [rolls]}}
+  rollMaster: {}, // NOW: {subject: {morning: {I:[rolls], II:[rolls]}, evening: {I:[rolls], II:[rolls]}}}
   sessions:   [],
   attendance: [],
   halls:      [],
@@ -551,7 +564,15 @@ function refreshDashboard() {
   let subjects = Object.keys(appData.rollMaster);
   let totalRolls = subjects.reduce((s,k) => {
     let sub = appData.rollMaster[k];
-    return s + ((sub.morning?.length||0) + (sub.evening?.length||0));
+    let count = 0;
+    ['morning','evening'].forEach(shift => {
+      if(sub[shift]) {
+        ['I','II'].forEach(paper => {
+          count += (sub[shift][paper]?.length||0);
+        });
+      }
+    });
+    return s + count;
   }, 0);
   document.getElementById("statRollSubjects").innerText = subjects.length;
   document.getElementById("statTotalRolls").innerText   = totalRolls;
@@ -567,8 +588,8 @@ function refreshDashboard() {
     </div>`;
   let recent=[...appData.attendance].reverse().slice(0,5);
   document.getElementById("recentAttList").innerHTML = recent.length
-    ? `<table class="data-table"><thead><tr><th>Date</th><th>Subject</th><th>Shift</th><th>Present</th><th>Absent</th></tr></thead><tbody>
-       ${recent.map(r=>`<tr><td>${r.date}</td><td style="font-weight:600">${r.subject}</td><td><span class="badge ${r.shift==='M'?'badge-morning':'badge-evening'}">${r.shift==='M'?'Morning':'Evening'}</span></td><td style="color:var(--success);font-weight:700">${r.presentCount}</td><td style="color:var(--danger);font-weight:700">${r.absentRolls.length}</td></tr>`).join("")}
+    ? `<table class="data-table"><thead><tr><th>Date</th><th>Subject</th><th>Shift</th><th>Paper</th><th>Present</th><th>Absent</th></tr></thead><tbody>
+       ${recent.map(r=>`<tr><td>${r.date}</td><td style="font-weight:600">${r.subject}</td><td><span class="badge ${r.shift==='M'?'badge-morning':'badge-evening'}">${r.shift==='M'?'Morning':'Evening'}</span></td><td>${r.paper||'I'}</td><td style="color:var(--success);font-weight:700">${r.presentCount}</td><td style="color:var(--danger);font-weight:700">${r.absentRolls.length}</td></tr>`).join("")}
        </tbody></table>`
     : `<p style="color:var(--text-muted)">No attendance records yet.</p>`;
 }
@@ -593,7 +614,7 @@ function saveCenterConfig(){
 }
 
 // ════════════════════════════════════════════════
-// ROLL MASTER (NEW: with shift)
+// ROLL MASTER (with shift & paper)
 // ════════════════════════════════════════════════
 function renderRollMaster() {
   let sel = document.getElementById("rollSubjectSelect");
@@ -608,15 +629,24 @@ function renderRollMaster() {
     return;
   }
   wrap.innerHTML = subjects.map(sub => {
-    let data = appData.rollMaster[sub] || {morning:[], evening:[]};
-    let morningRolls = data.morning || [];
-    let eveningRolls = data.evening || [];
+    let data = appData.rollMaster[sub] || {morning:{I:[],II:[]}, evening:{I:[],II:[]}};
+    // ensure structure
+    ['morning','evening'].forEach(shift => {
+      if(!data[shift]) data[shift] = {I:[],II:[]};
+      if(!data[shift].I) data[shift].I = [];
+      if(!data[shift].II) data[shift].II = [];
+    });
+    let morningI = data.morning.I || [];
+    let morningII = data.morning.II || [];
+    let eveningI = data.evening.I || [];
+    let eveningII = data.evening.II || [];
+    let total = morningI.length + morningII.length + eveningI.length + eveningII.length;
     return `
     <div class="roll-subject-card">
       <div class="roll-subject-header">
         <h4>
           📘 ${sub}
-          <span class="roll-count-badge">M:${morningRolls.length} | E:${eveningRolls.length}</span>
+          <span class="roll-count-badge">M:${morningI.length+morningII.length} | E:${eveningI.length+eveningII.length} | Total:${total}</span>
         </h4>
         <div style="display:flex;gap:6px;flex-wrap:wrap" onclick="event.stopPropagation()">
           <button class="btn btn-outline btn-sm" onclick="editSubjectRolls('${sub.replace(/'/g,"\\'")}')">✏️ Edit</button>
@@ -626,16 +656,40 @@ function renderRollMaster() {
       <div style="padding:10px 14px">
         <div style="margin-bottom:8px">
           <div style="font-size:0.75rem;font-weight:700;color:#1e40af;margin-bottom:4px">🌅 Morning</div>
-          <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#dbeafe;border-radius:8px;max-height:100px;overflow-y:auto">
-            ${morningRolls.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','M')" style="background:#fff;border-color:#1e40af">${r}</span>`).join("")}
-            ${morningRolls.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls yet</span>`:""}
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <div style="flex:1;min-width:120px">
+              <div style="font-size:0.65rem;color:#1e40af;font-weight:600">Paper I</div>
+              <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#dbeafe;border-radius:8px;max-height:80px;overflow-y:auto">
+                ${morningI.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','M','I')" style="background:#fff;border-color:#1e40af">${r}</span>`).join("")}
+                ${morningI.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls</span>`:""}
+              </div>
+            </div>
+            <div style="flex:1;min-width:120px">
+              <div style="font-size:0.65rem;color:#1e40af;font-weight:600">Paper II</div>
+              <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#dbeafe;border-radius:8px;max-height:80px;overflow-y:auto">
+                ${morningII.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','M','II')" style="background:#fff;border-color:#1e40af">${r}</span>`).join("")}
+                ${morningII.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls</span>`:""}
+              </div>
+            </div>
           </div>
         </div>
         <div>
           <div style="font-size:0.75rem;font-weight:700;color:#92400e;margin-bottom:4px">🌙 Evening</div>
-          <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#ffedd5;border-radius:8px;max-height:100px;overflow-y:auto">
-            ${eveningRolls.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','E')" style="background:#fff;border-color:#92400e">${r}</span>`).join("")}
-            ${eveningRolls.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls yet</span>`:""}
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <div style="flex:1;min-width:120px">
+              <div style="font-size:0.65rem;color:#92400e;font-weight:600">Paper I</div>
+              <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#ffedd5;border-radius:8px;max-height:80px;overflow-y:auto">
+                ${eveningI.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','E','I')" style="background:#fff;border-color:#92400e">${r}</span>`).join("")}
+                ${eveningI.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls</span>`:""}
+              </div>
+            </div>
+            <div style="flex:1;min-width:120px">
+              <div style="font-size:0.65rem;color:#92400e;font-weight:600">Paper II</div>
+              <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#ffedd5;border-radius:8px;max-height:80px;overflow-y:auto">
+                ${eveningII.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','E','II')" style="background:#fff;border-color:#92400e">${r}</span>`).join("")}
+                ${eveningII.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls</span>`:""}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -649,6 +703,7 @@ function openAddSubjectRolls() {
   document.getElementById("rollNumbersInput").value = "";
   document.getElementById("rollInputPreview").textContent = "";
   document.getElementById("rollShift").value = "M";
+  document.getElementById("rollPaper").value = "I";
   document.getElementById("addSubjectPanel").style.display = "block";
   document.getElementById("rollSubjectName").focus();
 }
@@ -658,9 +713,10 @@ function editSubjectRolls(sub) {
   document.getElementById("rollSubjectName").value = sub;
   let sel = document.getElementById("rollSubjectSelect");
   for(let o of sel.options){ if(o.value===sub){o.selected=true;break;} }
-  let data = appData.rollMaster[sub] || {morning:[], evening:[]};
+  let data = appData.rollMaster[sub] || {morning:{I:[],II:[]}, evening:{I:[],II:[]}};
   let shift = document.getElementById("rollShift").value;
-  let rolls = (shift==="M" ? data.morning : data.evening) || [];
+  let paper = document.getElementById("rollPaper").value;
+  let rolls = (data[shift.toLowerCase()]?.[paper]||[]);
   document.getElementById("rollNumbersInput").value = rolls.join(", ");
   updateRollInputPreview();
   document.getElementById("addSubjectPanel").style.display = "block";
@@ -688,14 +744,15 @@ function saveSubjectRolls() {
   let sub = (document.getElementById("rollSubjectName").value ||
              document.getElementById("rollSubjectSelect").value).trim();
   if(!sub){ showToast("Enter subject name"); return; }
-  let shift = document.getElementById("rollShift").value;
+  let shift = document.getElementById("rollShift").value.toLowerCase();
+  let paper = document.getElementById("rollPaper").value;
   let raw = document.getElementById("rollNumbersInput").value;
   let rolls = [...new Set(raw.split(/[,\n\s]+/).map(p=>p.trim()).filter(Boolean))];
   if(!rolls.length){ showToast("Enter at least one roll number"); return; }
   
-  if(!appData.rollMaster[sub]) appData.rollMaster[sub] = {morning:[], evening:[]};
-  if(shift==="M") appData.rollMaster[sub].morning = rolls;
-  else appData.rollMaster[sub].evening = rolls;
+  if(!appData.rollMaster[sub]) appData.rollMaster[sub] = {morning:{I:[],II:[]}, evening:{I:[],II:[]}};
+  if(!appData.rollMaster[sub][shift]) appData.rollMaster[sub][shift] = {I:[],II:[]};
+  appData.rollMaster[sub][shift][paper] = rolls;
   
   if(!DEFAULT_SUBJECTS.includes(sub)) DEFAULT_SUBJECTS.push(sub);
   saveToLocal();
@@ -703,7 +760,7 @@ function saveSubjectRolls() {
   renderRollMaster();
   renderSubjectSelector();
   refreshDashboard();
-  showToast(`"${sub}" (${shift==="M"?"Morning":"Evening"}) — ${rolls.length} rolls saved ✅`);
+  showToast(`"${sub}" (${shift==="morning"?"Morning":"Evening"}, Paper ${paper}) — ${rolls.length} rolls saved ✅`);
 }
 
 function deleteSubjectRolls(sub) {
@@ -713,10 +770,12 @@ function deleteSubjectRolls(sub) {
   showToast(`Deleted: ${sub}`);
 }
 
-function removeSingleRoll(sub, roll, shift) {
+function removeSingleRoll(sub, roll, shift, paper) {
   if(!appData.rollMaster[sub]) return;
-  if(shift==="M") appData.rollMaster[sub].morning = (appData.rollMaster[sub].morning||[]).filter(r=>r!==roll);
-  else appData.rollMaster[sub].evening = (appData.rollMaster[sub].evening||[]).filter(r=>r!==roll);
+  let s = shift.toLowerCase();
+  if(appData.rollMaster[sub][s] && appData.rollMaster[sub][s][paper]) {
+    appData.rollMaster[sub][s][paper] = appData.rollMaster[sub][s][paper].filter(r=>r!==roll);
+  }
   saveToLocal(); renderRollMaster(); refreshDashboard();
 }
 
@@ -778,7 +837,7 @@ function clearAllSeating() {
 }
 
 // ════════════════════════════════════════════════
-// SEATING GRID — with Shift Separation
+// SEATING GRID — with Shift & Paper Separation
 // ════════════════════════════════════════════════
 let tempSubjectHalls = {};
 
@@ -799,14 +858,16 @@ function initiateMultiSubjectSeating() {
     }));
     tempSubjectHalls[sub] = halls;
     let sid = subId(sub);
-    let shiftData = shift==="M" ? (appData.rollMaster[sub]?.morning||[]) : (appData.rollMaster[sub]?.evening||[]);
-    let hasRolls = shiftData.length>0;
+    let shiftKey = shift==="M" ? "morning" : "evening";
+    let shiftData = (appData.rollMaster[sub]?.[shiftKey]||{});
+    let totalRolls = (shiftData.I?.length||0) + (shiftData.II?.length||0);
+    let hasRolls = totalRolls > 0;
     out += `
       <div id="subj-block-${sid}" style="margin-top:20px;border:2px solid var(--primary);border-radius:14px;overflow:hidden">
         <div style="background:var(--primary-bg);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
           <h4 style="font-size:0.9rem;color:var(--primary)">📘 ${sub} <span class="shift-badge ${shift==="M"?"morning":"evening"}">${shift==="M"?"Morning":"Evening"}</span> | ${date}</h4>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
-            ${hasRolls?`<button class="btn btn-warning btn-sm" onclick="openAutoAssign('${sub.replace(/'/g,"\\'")}')">🎯 Auto-Assign (${shiftData.length} rolls)</button>`:""}
+            ${hasRolls?`<button class="btn btn-warning btn-sm" onclick="openAutoAssign('${sub.replace(/'/g,"\\'")}')">🎯 Auto-Assign (${totalRolls} rolls)</button>`:""}
             <button class="btn btn-success btn-sm" onclick="saveSubjectSession('${sub}','${date}','${shift}','${building}')">💾 Save</button>
             <button class="btn btn-outline btn-sm" onclick="clearSubjectRolls('${sub}')">🗑 Clear</button>
           </div>
@@ -934,7 +995,23 @@ function saveSubjectSession(sub,date,shift,building){
   if(!halls){ showToast("No data"); return; }
   let allRolls=halls.flatMap(h=>h.rollMatrix.flat()).filter(r=>r&&r.trim());
   if(!allRolls.length){ showToast(`No rolls entered for ${sub}`); return; }
-  let sess={id:Date.now()+Math.random(),date,sub,shift,paper:"Annual",building,
+  // Determine paper from roll master (default I)
+  let shiftKey = shift==="M" ? "morning" : "evening";
+  let paper = "I";
+  // Check if any roll belongs to paper II
+  let rollMasterData = appData.rollMaster[sub]?.[shiftKey]||{I:[],II:[]};
+  let paperIRolls = rollMasterData.I||[];
+  let paperIIRolls = rollMasterData.II||[];
+  // If we have both, we can't determine, default I
+  // But we store paper in session for SF13
+  // For simplicity, we'll use paper from the first roll found in roll master
+  if(allRolls.length && paperIIRolls.length > 0) {
+    // Check if any of the placed rolls are from paper II
+    let placedSet = new Set(allRolls);
+    let hasPaperII = paperIIRolls.some(r => placedSet.has(r));
+    if(hasPaperII) paper = "II";
+  }
+  let sess={id:Date.now()+Math.random(),date,sub,shift,paper,building,
     halls:halls.map(h=>({...h,rollMatrix:h.rollMatrix.map(col=>[...col])}))};
   appData.sessions=appData.sessions.filter(s=>!(s.date===date&&s.shift===shift&&s.sub===sub));
   appData.sessions.push(sess);
@@ -943,7 +1020,7 @@ function saveSubjectSession(sub,date,shift,building){
 }
 
 // ════════════════════════════════════════════════
-// AUTO-ASSIGN FROM ROLL MASTER
+// AUTO-ASSIGN FROM ROLL MASTER (with paper support)
 // ════════════════════════════════════════════════
 let _autoAssignSub = null;
 let _autoAssignSelected = [];
@@ -951,7 +1028,9 @@ let _autoAssignSelected = [];
 function openAutoAssign(sub) {
   _autoAssignSub = sub;
   let shift = document.getElementById("seatShift").value;
-  let rolls = (shift==="M" ? appData.rollMaster[sub]?.morning : appData.rollMaster[sub]?.evening) || [];
+  let shiftKey = shift==="M" ? "morning" : "evening";
+  let shiftData = appData.rollMaster[sub]?.[shiftKey] || {I:[],II:[]};
+  let rolls = [...(shiftData.I||[]), ...(shiftData.II||[])];
   let halls = tempSubjectHalls[sub] || [];
   let totalSeats = halls.reduce((s,h)=>s+(h.lines*h.seatsPerLine),0);
   let placed = new Set(halls.flatMap(h=>h.rollMatrix.flat()).filter(r=>r&&r.trim()));
@@ -961,6 +1040,7 @@ function openAutoAssign(sub) {
     <div class="alert alert-info">
       Subject: <strong>${sub}</strong> — ${shift==="M"?"Morning":"Evening"} &nbsp;|&nbsp;
       Total Rolls: <strong>${rolls.length}</strong> &nbsp;|&nbsp; Available Seats: <strong>${totalSeats}</strong>
+      <br>Paper I: ${shiftData.I?.length||0}, Paper II: ${shiftData.II?.length||0}
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
       <div style="font-size:0.8rem;color:var(--text-muted)">Click to select/deselect. Green = already placed.</div>
@@ -973,10 +1053,11 @@ function openAutoAssign(sub) {
       ${rolls.map(r=>{
         let isPlaced=placed.has(r);
         let isSel=_autoAssignSelected.includes(r);
+        let paper = (shiftData.I||[]).includes(r) ? 'I' : 'II';
         return `<span class="roll-pill ${isPlaced?"selected-for-seating":isSel?"selected-for-seating":""}"
           id="aapill-${r}" onclick="toggleAutoAssignRoll('${r}')"
-          title="${isPlaced?"Already placed":"Click to select"}"
-          style="${isPlaced?"cursor:not-allowed;opacity:0.6":""}">${r}${isPlaced?" ✓":""}</span>`;
+          title="${isPlaced?"Already placed":"Click to select"} (Paper ${paper})"
+          style="${isPlaced?"cursor:not-allowed;opacity:0.6":""}">${r} (P${paper})${isPlaced?" ✓":""}</span>`;
       }).join("")}
     </div>
     <div id="autoAssignSummary" class="alert alert-success"></div>
@@ -1029,7 +1110,9 @@ function toggleAutoAssignRoll(r) {
 function autoAssignSelectAll() {
   let placed = new Set((tempSubjectHalls[_autoAssignSub]||[]).flatMap(h=>h.rollMatrix.flat()).filter(r=>r&&r.trim()));
   let shift = document.getElementById("seatShift").value;
-  let rolls = (shift==="M" ? appData.rollMaster[_autoAssignSub]?.morning : appData.rollMaster[_autoAssignSub]?.evening) || [];
+  let shiftKey = shift==="M" ? "morning" : "evening";
+  let shiftData = appData.rollMaster[_autoAssignSub]?.[shiftKey] || {I:[],II:[]};
+  let rolls = [...(shiftData.I||[]), ...(shiftData.II||[])];
   _autoAssignSelected = rolls.filter(r=>!placed.has(r));
   rolls.forEach(r=>{
     let pill=document.getElementById(`aapill-${r}`);
@@ -1040,7 +1123,11 @@ function autoAssignSelectAll() {
 
 function autoAssignSelectNone() {
   _autoAssignSelected = [];
-  (appData.rollMaster[_autoAssignSub]||[]).forEach(r=>{
+  let shift = document.getElementById("seatShift").value;
+  let shiftKey = shift==="M" ? "morning" : "evening";
+  let shiftData = appData.rollMaster[_autoAssignSub]?.[shiftKey] || {I:[],II:[]};
+  let rolls = [...(shiftData.I||[]), ...(shiftData.II||[])];
+  rolls.forEach(r=>{
     let pill=document.getElementById(`aapill-${r}`);
     if(pill) pill.classList.remove("selected-for-seating");
   });
@@ -1116,7 +1203,7 @@ function populateAttSessionSelect() {
     return;
   }
   sel.innerHTML = appData.sessions.map((s,i) => 
-    `<option value="${i}">${s.sub} | ${s.shift==="M"?"Morning":"Evening"} | ${s.date}</option>`
+    `<option value="${i}">${s.sub} | ${s.shift==="M"?"Morning":"Evening"} | ${s.paper||'I'} | ${s.date}</option>`
   ).join("");
 }
 
@@ -1129,7 +1216,7 @@ function saveAttendance() {
   let allRolls = sess.halls.flatMap(h=>h.rollMatrix.flat()).filter(r=>r&&r.trim());
   let present = allRolls.filter(r=>!absent.includes(r));
   let att = {
-    id:sess.id, date:sess.date, subject:sess.sub, shift:sess.shift, paper:sess.paper,
+    id:sess.id, date:sess.date, subject:sess.sub, shift:sess.shift, paper:sess.paper||"I",
     total:allRolls.length, presentRolls:present, presentCount:present.length,
     absentRolls:absent, copiesSentCount:present.length,
     sentTo:document.getElementById("copiesSentToInput").value, note:document.getElementById("remarksInput").value
@@ -1149,13 +1236,14 @@ function refreshAttendanceTable() {
   }
   wrap.innerHTML = `<table class="data-table">
     <thead><tr>
-      <th>Date</th><th>Subject</th><th>Shift</th><th>Total</th><th>Present</th><th>Absent</th><th>Copies</th><th>Sent To</th><th>Actions</th>
+      <th>Date</th><th>Subject</th><th>Shift</th><th>Paper</th><th>Total</th><th>Present</th><th>Absent</th><th>Copies</th><th>Sent To</th><th>Actions</th>
     </tr></thead>
     <tbody>
       ${appData.attendance.map((a,i) => `<tr>
         <td>${a.date}</td>
         <td style="font-weight:600">${a.subject}</td>
         <td><span class="badge ${a.shift==='M'?'badge-morning':'badge-evening'}">${a.shift==='M'?'Morning':'Evening'}</span></td>
+        <td>${a.paper||'I'}</td>
         <td style="text-align:center">${a.total}</td>
         <td style="text-align:center;color:var(--success);font-weight:700">${a.presentCount}</td>
         <td style="text-align:center;color:var(--danger);font-weight:700">${a.absentRolls.length}</td>
@@ -1173,6 +1261,7 @@ function editAttendance(idx) {
     <div class="form-group"><label>Date</label><input id="editDate" value="${att.date}" disabled></div>
     <div class="form-group"><label>Subject</label><input id="editSubject" value="${att.subject}" disabled></div>
     <div class="form-group"><label>Shift</label><input id="editShift" value="${att.shift==='M'?'Morning':'Evening'}" disabled></div>
+    <div class="form-group"><label>Paper</label><input id="editPaper" value="${att.paper||'I'}" disabled></div>
     <div class="form-group"><label>Total Roll Numbers</label><input id="editTotal" value="${att.total}" readonly style="background:#f1f5f9"></div>
     <div class="form-group"><label>Absent Roll Numbers</label><textarea id="editAbsentRolls" rows="2">${att.absentRolls.join(", ")}</textarea><div id="editPreview" style="font-size:0.75rem;color:var(--success);margin-top:4px"></div></div>
     <div class="form-group"><label>Copies Sent To</label><input id="editCopiesSentTo" value="${att.sentTo||'CSO'}"></div>
@@ -1216,7 +1305,7 @@ function deleteAttendance(idx) {
 }
 
 // ════════════════════════════════════════════════
-// SF-13 REPORT (UPDATED: No Sr.#, no Total col, print heading repeat)
+// SF-13 REPORT (includes Paper column)
 // ════════════════════════════════════════════════
 function renderSF13Report(){
   let wrap=document.getElementById("sf13ReportContainer");
@@ -1235,7 +1324,7 @@ function renderSF13Report(){
       if(ri===0) rows+=`<td class="td-date-vertical" rowspan="${dateMap[date].length}" style="border:1px solid #333">${date}</td>`;
       rows+=`<td style="border:1px solid #333;padding:6px;font-weight:600">${att.subject}</td>
         <td style="border:1px solid #333;padding:6px">${att.shift==="M"?"Morning":"Evening"}</td>
-        <td style="border:1px solid #333;padding:6px">${att.paper||"Annual"}</td>
+        <td style="border:1px solid #333;padding:6px;text-align:center">${att.paper||"I"}</td>
         <td style="border:1px solid #333;padding:6px;font-size:9.5px;font-family:monospace;word-break:break-all;max-width:240px">${cp}</td>
         <td style="border:1px solid #333;padding:6px;text-align:center;font-weight:700">${att.presentCount}</td>
         <td style="border:1px solid #333;padding:6px">${att.sentTo||"CSO"}</td>
@@ -1294,7 +1383,7 @@ function exportSF13ToExcel(){
     "Date":a.date,
     "Subject":a.subject,
     "Shift":a.shift==="M"?"Morning":"Evening",
-    "Paper":a.paper||"Annual",
+    "Paper":a.paper||"I",
     "Present Rolls":compressRolls(a.presentRolls),
     "Copies":a.presentCount,
     "Sent To":a.sentTo||"CSO",
@@ -1380,10 +1469,10 @@ function printSeatingPlansFiltered() {
   sessions.forEach(sess => {
     html += `<div class="subject-block">
       <div class="subject-header">
-        📘 ${sess.sub} — ${sess.shift === 'M' ? '🌅 Morning' : '🌙 Evening'} | ${sess.date} | ${sess.building || 'Main Hall'}
+        📘 ${sess.sub} — ${sess.shift === 'M' ? '🌅 Morning' : '🌙 Evening'} | Paper ${sess.paper||'I'} | ${sess.date} | ${sess.building || 'Main Hall'}
       </div>
       <div class="info-box">
-        <strong>Date:</strong> ${sess.date} | <strong>Shift:</strong> ${sess.shift === 'M' ? 'Morning' : 'Evening'} | <strong>Halls:</strong> ${sess.halls.map(h => h.name).join(', ')}
+        <strong>Date:</strong> ${sess.date} | <strong>Shift:</strong> ${sess.shift === 'M' ? 'Morning' : 'Evening'} | <strong>Paper:</strong> ${sess.paper||'I'} | <strong>Halls:</strong> ${sess.halls.map(h => h.name).join(', ')}
       </div>`;
     
     sess.halls.forEach(hall => {
@@ -1499,10 +1588,10 @@ function generateSeatingPlanHTML(filterType) {
         sessionsByDate[date][subj].forEach(sess => {
           html += `<div class="subject-block">
             <div class="subject-header">
-              ${subj} — ${sess.shift === 'M' ? '🌅 Morning' : '🌙 Evening'} | ${sess.building || 'Main Hall'}
+              ${subj} — ${sess.shift === 'M' ? '🌅 Morning' : '🌙 Evening'} | Paper ${sess.paper||'I'} | ${sess.building || 'Main Hall'}
             </div>
             <div class="info-box">
-              <strong>Session:</strong> ${date} | <strong>Shift:</strong> ${sess.shift === 'M' ? 'Morning' : 'Evening'} | <strong>Halls:</strong> ${sess.halls.map(h => h.name).join(', ')}
+              <strong>Session:</strong> ${date} | <strong>Shift:</strong> ${sess.shift === 'M' ? 'Morning' : 'Evening'} | <strong>Paper:</strong> ${sess.paper||'I'} | <strong>Halls:</strong> ${sess.halls.map(h => h.name).join(', ')}
             </div>`;
           
           sess.halls.forEach(hall => {
@@ -1591,22 +1680,28 @@ function handleRollExcelImport(inp) {
         let ws = wb.Sheets[sheetName];
         let data = XLSX.utils.sheet_to_json(ws, {header:1});
         let sub = sheetName;
-        let morningRolls = [];
-        let eveningRolls = [];
+        let morningI=[], morningII=[], eveningI=[], eveningII=[];
         data.forEach((row, ri) => {
           if(ri===0 && String(row[0]).toLowerCase().includes("subject")) return;
           if(row[0] && String(row[0]).trim()) {
             let s = String(row[0]).trim();
             let shift = row[1] ? String(row[1]).trim().toUpperCase()[0] : "M";
-            let roll = row[2] || row[1];
+            let paper = row[2] ? String(row[2]).trim().toUpperCase() : "I";
+            let roll = row[3] || row[1];
             if(/^\d+$/.test(String(roll).trim())) {
-              if(shift==="E") eveningRolls.push(String(roll).trim());
-              else morningRolls.push(String(roll).trim());
+              let r = String(roll).trim();
+              if(shift==="M" && paper==="I") morningI.push(r);
+              else if(shift==="M" && paper==="II") morningII.push(r);
+              else if(shift==="E" && paper==="I") eveningI.push(r);
+              else if(shift==="E" && paper==="II") eveningII.push(r);
             }
           }
         });
-        if(morningRolls.length || eveningRolls.length) {
-          appData.rollMaster[sub] = { morning: morningRolls, evening: eveningRolls };
+        if(morningI.length || morningII.length || eveningI.length || eveningII.length) {
+          appData.rollMaster[sub] = {
+            morning: { I: morningI, II: morningII },
+            evening: { I: eveningI, II: eveningII }
+          };
           imported++;
         }
       });
