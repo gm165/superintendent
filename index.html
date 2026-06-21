@@ -273,6 +273,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
 
 <!-- SEATING PLAN -->
 <div id="seatplanSection" class="section">
+  <div id="savedSessionsContainer" style="margin-bottom:20px"></div>
   <div class="card">
     <div class="card-header"><h3>🎓 Seating Plan Setup</h3></div>
     <div class="card-body">
@@ -547,7 +548,7 @@ function switchSection(id) {
   document.getElementById("mobileMenu").classList.remove("open");
   if(id==="dashboard")   refreshDashboard();
   if(id==="rollmaster")  renderRollMaster();
-  if(id==="seatplan")    { renderHallList(); selectedSubjects = []; renderSubjectSelector(); }
+  if(id==="seatplan")    { renderHallList(); selectedSubjects = []; renderSubjectSelector(); renderSavedSessions(); }
   if(id==="attendance")  { refreshAttendanceTable(); populateAttSessionSelect(); }
   if(id==="sf13")        renderSF13Report();
   if(id==="tada")        loadTADAForm();
@@ -621,7 +622,7 @@ function renderRollMaster() {
     allSubs.map(s=>`<option value="${s}">${s}</option>`).join("");
 
   let wrap = document.getElementById("rollSubjectCards");
-  let subjects = Object.keys(appData.rollMaster);
+  let subjects = Object.keys(appData.rollMaster).reverse(); // Show newest first
   if(!subjects.length){
     wrap.innerHTML = `<div class="alert alert-info">No subjects added yet. Click "+ Add Subject" to start.</div>`;
     return;
@@ -655,14 +656,14 @@ function renderRollMaster() {
           <div style="font-size:0.75rem;font-weight:700;color:#1e40af;margin-bottom:4px">🌅 Morning</div>
           <div style="display:flex;flex-wrap:wrap;gap:8px">
             <div style="flex:1;min-width:120px">
-              <div style="font-size:0.65rem;color:#1e40af;font-weight:600">Paper I</div>
+              <div style="font-size:0.65rem;color:#1e40af;font-weight:600">I</div>
               <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#dbeafe;border-radius:8px;max-height:80px;overflow-y:auto">
                 ${morningI.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','M','I')" style="background:#fff;border-color:#1e40af">${r}</span>`).join("")}
                 ${morningI.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls</span>`:""}
               </div>
             </div>
             <div style="flex:1;min-width:120px">
-              <div style="font-size:0.65rem;color:#1e40af;font-weight:600">Paper II</div>
+              <div style="font-size:0.65rem;color:#1e40af;font-weight:600">II</div>
               <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#dbeafe;border-radius:8px;max-height:80px;overflow-y:auto">
                 ${morningII.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','M','II')" style="background:#fff;border-color:#1e40af">${r}</span>`).join("")}
                 ${morningII.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls</span>`:""}
@@ -674,14 +675,14 @@ function renderRollMaster() {
           <div style="font-size:0.75rem;font-weight:700;color:#92400e;margin-bottom:4px">🌙 Evening</div>
           <div style="display:flex;flex-wrap:wrap;gap:8px">
             <div style="flex:1;min-width:120px">
-              <div style="font-size:0.65rem;color:#92400e;font-weight:600">Paper I</div>
+              <div style="font-size:0.65rem;color:#92400e;font-weight:600">I</div>
               <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#ffedd5;border-radius:8px;max-height:80px;overflow-y:auto">
                 ${eveningI.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','E','I')" style="background:#fff;border-color:#92400e">${r}</span>`).join("")}
                 ${eveningI.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls</span>`:""}
               </div>
             </div>
             <div style="flex:1;min-width:120px">
-              <div style="font-size:0.65rem;color:#92400e;font-weight:600">Paper II</div>
+              <div style="font-size:0.65rem;color:#92400e;font-weight:600">II</div>
               <div class="roll-pills-wrap" style="gap:3px;padding:8px;background:#ffedd5;border-radius:8px;max-height:80px;overflow-y:auto">
                 ${eveningII.map(r=>`<span class="roll-pill" title="Click to remove" onclick="removeSingleRoll('${sub.replace(/'/g,"\\'")}','${r}','E','II')" style="background:#fff;border-color:#92400e">${r}</span>`).join("")}
                 ${eveningII.length===0?`<span style="color:var(--text-muted);font-size:0.8rem">No rolls</span>`:""}
@@ -894,9 +895,112 @@ function clearAllSeating() {
   showToast("Seating cleared");
 }
 
-// ════════════════════════════════════════════════
-// SEATING GRID
-// ════════════════════════════════════════════════
+function renderSavedSessions() {
+  let container = document.getElementById("savedSessionsContainer");
+  if(!container) {
+    // Create container if it doesn't exist
+    let seatingCard = document.querySelector("#seatplanSection .card-body");
+    if(seatingCard) {
+      let savedDiv = document.createElement("div");
+      savedDiv.id = "savedSessionsContainer";
+      savedDiv.style.marginBottom = "20px";
+      seatingCard.insertBefore(savedDiv, seatingCard.firstChild);
+      container = savedDiv;
+    }
+  }
+  
+  if(!container) return;
+  
+  if(!appData.sessions || appData.sessions.length === 0) {
+    container.innerHTML = `<div class="alert alert-info">📋 No saved seating sessions yet</div>`;
+    return;
+  }
+  
+  // Group sessions by date
+  let sessionsByDate = {};
+  appData.sessions.forEach(sess => {
+    if(!sessionsByDate[sess.date]) sessionsByDate[sess.date] = [];
+    sessionsByDate[sess.date].push(sess);
+  });
+  
+  let html = `<div class="card" style="margin-bottom:20px">
+    <div class="card-header" style="background:#e8f5e9">
+      <h3 style="color:#15803d">📊 Saved Seating Sessions (${appData.sessions.length})</h3>
+    </div>
+    <div class="card-body">`;
+  
+  Object.keys(sessionsByDate).sort().reverse().forEach(date => {
+    html += `<div style="margin-bottom:16px">
+      <h4 style="font-size:0.9rem;color:#0f3b5f;margin-bottom:8px;border-bottom:2px solid #e2e8f0;padding-bottom:6px">
+        📅 ${date}
+      </h4>`;
+    
+    sessionsByDate[date].forEach(sess => {
+      let totalRolls = sess.halls.reduce((sum, h) => {
+        return sum + h.rollMatrix.flat().filter(r => r && r.trim()).length;
+      }, 0);
+      
+      html += `<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <div style="flex:1;min-width:200px">
+          <div style="font-weight:600;color:#0f3b5f;margin-bottom:4px">
+            📘 ${sess.sub} 
+            <span style="background:#e8f4f8;padding:2px 8px;border-radius:4px;font-size:0.75rem;margin-left:4px">
+              ${sess.shift==="M"?"🌅 Morning":"🌙 Evening"}
+            </span>
+            <span style="background:#fff3cd;padding:2px 8px;border-radius:4px;font-size:0.75rem;margin-left:4px">
+              Paper ${sess.paper||'I'}
+            </span>
+          </div>
+          <div style="font-size:0.8rem;color:#475569">
+            ${sess.building || 'Main Hall'} • ${totalRolls} rolls seated • ${sess.halls.length} hall(s)
+          </div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-outline btn-sm" onclick="viewSavedSession('${sess.sub}','${sess.date}','${sess.shift}','${sess.paper||'I'}')">
+            👁️ View
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSession('${sess.sub}','${sess.date}','${sess.shift}','${sess.paper||'I'}')">
+            🗑 Delete
+          </button>
+        </div>
+      </div>`;
+    });
+    
+    html += `</div>`;
+  });
+  
+  html += `</div></div>`;
+  container.innerHTML = html;
+}
+
+function viewSavedSession(sub, date, shift, paper) {
+  // Set the form values to the saved session
+  document.getElementById("seatDate").value = date;
+  document.getElementById("seatShift").value = shift;
+  document.getElementById("seatPaper").value = paper;
+  document.getElementById("seatBuilding").value = "";
+  
+  selectedSubjects = [sub];
+  renderSubjectSelector();
+  
+  // Scroll to seating grids
+  setTimeout(() => {
+    initiateMultiSubjectSeating();
+    document.querySelector("#multiSeatingOutput").scrollIntoView({ behavior: "smooth", block: "center" });
+  }, 100);
+  
+  showToast(`Loaded: ${sub} (${date}) ✅`);
+}
+
+function deleteSession(sub, date, shift, paper) {
+  if(!confirm(`Delete seating session for ${sub} on ${date}?`)) return;
+  appData.sessions = appData.sessions.filter(s => 
+    !(s.sub===sub && s.date===date && s.shift===shift && s.paper===paper)
+  );
+  saveToLocal();
+  renderSavedSessions();
+  showToast(`Session deleted ✅`);
+}
 function initiateMultiSubjectSeating() {
   if(!selectedSubjects.length){ showToast("Select at least 1 subject"); return; }
   if(!hallsArray.length)       { showToast("Add at least one hall first"); return; }
@@ -1056,7 +1160,7 @@ function saveSubjectSession(sub,date,shift,paper,building){
     halls:halls.map(h=>({...h,rollMatrix:h.rollMatrix.map(col=>[...col])}))};
   appData.sessions=appData.sessions.filter(s=>!(s.date===date&&s.shift===shift&&s.sub===sub&&s.paper===paper));
   appData.sessions.push(sess);
-  saveToLocal(); populateAttSessionSelect(); refreshDashboard();
+  saveToLocal(); populateAttSessionSelect(); refreshDashboard(); renderSavedSessions();
   showToast(`"${sub}" (Paper ${paper}) session saved ✅`);
 }
 
@@ -1922,6 +2026,7 @@ refreshDashboard();
 renderRollMaster();
 renderHallList();
 renderSubjectSelector();
+renderSavedSessions();
 populateAttSessionSelect();
 refreshAttendanceTable();
 renderSF13Report();
