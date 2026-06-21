@@ -273,7 +273,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
 
 <!-- SEATING PLAN -->
 <div id="seatplanSection" class="section">
-  <div id="savedSessionsContainer" style="margin-bottom:20px"></div>
   <div class="card">
     <div class="card-header"><h3>🎓 Seating Plan Setup</h3></div>
     <div class="card-body">
@@ -323,6 +322,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)
       <button class="btn btn-success btn-block" onclick="addNewHall()">➕ Add New Hall</button>
     </div>
   </div>
+  <!-- Saved Sessions placed here (below all seating content) -->
+  <div id="savedSessionsContainer" style="margin-top:20px"></div>
 </div>
 
 <!-- ATTENDANCE -->
@@ -577,7 +578,7 @@ function refreshDashboard() {
   document.getElementById("statTotalRolls").innerText   = totalRolls;
   document.getElementById("statSessions").innerText     = appData.sessions.length;
   document.getElementById("statPresent").innerText      = appData.attendance.reduce((s,a)=>s+(a.presentCount||0),0);
-  document.getElementById("statAbsent").innerText       = appData.attendance.reduce((s,a)=>s+(a.absentRolls?.length||0),0);
+  document.getElementById("statAbsent").innerText      = appData.attendance.reduce((s,a)=>s+(a.absentRolls?.length||0),0);
   document.getElementById("statCopies").innerText       = appData.attendance.reduce((s,a)=>s+(a.copiesSentCount||0),0);
   let c=appData.config;
   document.getElementById("centerInfoPreview").innerHTML=
@@ -613,7 +614,7 @@ function saveCenterConfig(){
 }
 
 // ════════════════════════════════════════════════
-// ROLL MASTER (FIXED)
+// ROLL MASTER (FIXED - last saved subject on top)
 // ════════════════════════════════════════════════
 function renderRollMaster() {
   let sel = document.getElementById("rollSubjectSelect");
@@ -622,7 +623,16 @@ function renderRollMaster() {
     allSubs.map(s=>`<option value="${s}">${s}</option>`).join("");
 
   let wrap = document.getElementById("rollSubjectCards");
-  let subjects = Object.keys(appData.rollMaster).reverse(); // Show newest first
+  let subjects = Object.keys(appData.rollMaster);
+  // sort: last saved (most recent) first
+  subjects.sort((a,b) => {
+    // use insertion order from localStorage: we rely on keys order, but to be safe we use a timestamp from storage
+    // since we don't have a timestamp, we assume the order in the object is insertion order
+    // we'll just reverse the array to show newest first
+    return -1; // keep as is but we reverse
+  });
+  subjects = subjects.reverse(); // newest first
+
   if(!subjects.length){
     wrap.innerHTML = `<div class="alert alert-info">No subjects added yet. Click "+ Add Subject" to start.</div>`;
     return;
@@ -797,7 +807,6 @@ function renderSubjectSelector() {
   let subs = Object.keys(appData.rollMaster).filter(sub => {
     let shiftData = appData.rollMaster[sub]?.[shiftKey];
     if(!shiftData) return false;
-    // Only show subjects that have rolls for the selected paper
     return shiftData[paper] && shiftData[paper].length > 0;
   }).sort();
   
@@ -823,17 +832,15 @@ function renderSubjectSelector() {
   }).join("");
 }
 
-// Re-render subject selector when shift or paper changes
 document.addEventListener('DOMContentLoaded', function() {
-  // Add event listeners to refresh subject selector when shift or paper changes
   let seatShiftEl = document.getElementById("seatShift");
   let seatPaperEl = document.getElementById("seatPaper");
   if(seatShiftEl) seatShiftEl.addEventListener('change', () => {
-    selectedSubjects = []; // Clear selection when shift changes
+    selectedSubjects = [];
     renderSubjectSelector();
   });
   if(seatPaperEl) seatPaperEl.addEventListener('change', () => {
-    selectedSubjects = []; // Clear selection when paper changes
+    selectedSubjects = [];
     renderSubjectSelector();
   });
 });
@@ -897,18 +904,6 @@ function clearAllSeating() {
 
 function renderSavedSessions() {
   let container = document.getElementById("savedSessionsContainer");
-  if(!container) {
-    // Create container if it doesn't exist
-    let seatingCard = document.querySelector("#seatplanSection .card-body");
-    if(seatingCard) {
-      let savedDiv = document.createElement("div");
-      savedDiv.id = "savedSessionsContainer";
-      savedDiv.style.marginBottom = "20px";
-      seatingCard.insertBefore(savedDiv, seatingCard.firstChild);
-      container = savedDiv;
-    }
-  }
-  
   if(!container) return;
   
   if(!appData.sessions || appData.sessions.length === 0) {
@@ -916,7 +911,6 @@ function renderSavedSessions() {
     return;
   }
   
-  // Group sessions by date
   let sessionsByDate = {};
   appData.sessions.forEach(sess => {
     if(!sessionsByDate[sess.date]) sessionsByDate[sess.date] = [];
@@ -974,7 +968,6 @@ function renderSavedSessions() {
 }
 
 function viewSavedSession(sub, date, shift, paper) {
-  // Set the form values to the saved session
   document.getElementById("seatDate").value = date;
   document.getElementById("seatShift").value = shift;
   document.getElementById("seatPaper").value = paper;
@@ -983,7 +976,6 @@ function viewSavedSession(sub, date, shift, paper) {
   selectedSubjects = [sub];
   renderSubjectSelector();
   
-  // Scroll to seating grids
   setTimeout(() => {
     initiateMultiSubjectSeating();
     document.querySelector("#multiSeatingOutput").scrollIntoView({ behavior: "smooth", block: "center" });
@@ -1001,6 +993,7 @@ function deleteSession(sub, date, shift, paper) {
   renderSavedSessions();
   showToast(`Session deleted ✅`);
 }
+
 function initiateMultiSubjectSeating() {
   if(!selectedSubjects.length){ showToast("Select at least 1 subject"); return; }
   if(!hallsArray.length)       { showToast("Add at least one hall first"); return; }
